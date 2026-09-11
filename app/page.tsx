@@ -2,7 +2,8 @@ export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { lyd, fmtDate, SALE_STATUS } from "@/lib/format";
-import { PageTitle, Card, Badge } from "@/components/ui";
+import { PageTitle, Card, Badge, Stat, TableWrap, THead } from "@/components/ui";
+import { IconCart, IconBox, IconUsers, IconBell, IconClock } from "@/components/icons";
 
 export default async function Home() {
   const start = new Date();
@@ -36,82 +37,92 @@ export default async function Home() {
     ]);
 
   const low = lowStock.filter((p) => p.quantity <= p.minQuantity);
-  // الربح التقريبي اليوم = المبيعات − التكلفة بسعر التكلفة الحالي
   const todayProfit = todayItems.reduce((s, it) => s + (it.price - (it.product?.costPrice ?? 0)) * it.qty, 0);
 
   return (
     <div>
       <PageTitle title="لوحة التحكم" sub="نظرة سريعة على حركة المحل" />
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-        <Card>
-          <div className="text-sm text-gray-500">مبيعات اليوم</div>
-          <div className="text-xl font-bold">{lyd(todayAgg._sum.total)}</div>
-          <div className="text-xs text-green-700 mt-1">الربح التقريبي: {lyd(todayProfit)}</div>
-        </Card>
-        <Card>
-          <div className="text-sm text-gray-500">الأصناف</div>
-          <div className="text-xl font-bold">{productsCount}</div>
-          <div className="text-xs text-gray-500 mt-1">
-            الوردية: {openShift ? <Link href="/shifts" className="text-green-700 font-bold hover:underline">مفتوحة</Link> : <Link href="/shifts" className="hover:underline">مغلقة — افتح</Link>}
-          </div>
-        </Card>
-        <Card>
-          <div className="text-sm text-gray-500">الزبائن</div>
-          <div className="text-xl font-bold">{customersCount}</div>
-        </Card>
-        <Card>
-          <div className="text-sm text-gray-500">تنبيهات</div>
-          <div className="text-sm mt-1 flex flex-col gap-1">
-            <span>فواتير انتظار: <b>{pending}</b></span>
-            <span>تذاكر صيانة مفتوحة: <b>{tickets}</b></span>
-            <span>مهام توصيل: <b>{tasks}</b></span>
-          </div>
-        </Card>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
+        <Stat
+          label="مبيعات اليوم"
+          value={lyd(todayAgg._sum.total)}
+          sub={<span className="text-emerald-700 font-bold">الربح: {lyd(todayProfit)}</span>}
+          icon={IconCart}
+          accent="bg-emerald-500/10 text-emerald-600"
+        />
+        <Stat
+          label="الأصناف"
+          value={productsCount}
+          sub={
+            openShift ? (
+              <Link href="/shifts" className="text-emerald-700 font-bold hover:underline">الوردية مفتوحة</Link>
+            ) : (
+              <Link href="/shifts" className="text-amber-700 font-bold hover:underline">الوردية مغلقة — افتح</Link>
+            )
+          }
+          icon={IconBox}
+          accent="bg-sky-500/10 text-sky-600"
+        />
+        <Stat label="الزبائن" value={customersCount} icon={IconUsers} accent="bg-violet-500/10 text-violet-600" />
+        <Stat
+          label="تحتاج انتباها"
+          value={`${pending + tickets + tasks}`}
+          sub={`انتظار ${pending} • صيانة ${tickets} • توصيل ${tasks}`}
+          icon={IconBell}
+          accent="bg-amber-500/10 text-amber-600"
+        />
       </div>
 
-      <div className="grid md:grid-cols-2 gap-3">
-        <Card>
-          <h2 className="font-bold mb-2">أحدث الفواتير</h2>
-          {recent.length === 0 ? (
-            <p className="text-sm text-gray-400">لا فواتير بعد</p>
-          ) : (
-            <table className="w-full text-sm">
-              <tbody>
-                {recent.map((s) => (
-                  <tr key={s.id} className="border-t">
-                    <td className="py-1">
-                      <Link href={`/sales/${s.id}`} className="text-blue-600 hover:underline">
-                        {s.no}
-                      </Link>
-                    </td>
-                    <td>{s.customer?.name ?? "—"}</td>
-                    <td><Badge>{SALE_STATUS[s.status] ?? s.status}</Badge></td>
-                    <td className="text-left font-bold">{lyd(s.total)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      <div className="grid lg:grid-cols-2 gap-4 items-start">
+        <div>
+          <h2 className="font-extrabold mb-2 flex items-center gap-2">
+            <IconClock width={18} height={18} /> أحدث الفواتير
+          </h2>
+          <TableWrap>
+            <THead>
+              <th className="p-2.5 text-right font-bold">الرقم</th>
+              <th className="p-2.5 text-right font-bold">الزبون</th>
+              <th className="p-2.5 font-bold">الحالة</th>
+              <th className="p-2.5 font-bold">الإجمالي</th>
+            </THead>
+            <tbody>
+              {recent.map((s) => (
+                <tr key={s.id} className="border-t border-slate-100 hover:bg-slate-50/70 transition">
+                  <td className="p-2.5">
+                    <Link href={`/sales/${s.id}`} className="text-[var(--brand)] font-bold hover:underline">
+                      {s.no}
+                    </Link>
+                  </td>
+                  <td className="p-2.5">{s.customer?.name ?? "—"}</td>
+                  <td className="p-2.5"><Badge>{SALE_STATUS[s.status] ?? s.status}</Badge></td>
+                  <td className="p-2.5 font-extrabold">{lyd(s.total)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </TableWrap>
+          {recent.length === 0 && (
+            <Card><p className="text-center text-slate-400 py-4 text-sm">لا فواتير بعد</p></Card>
           )}
-        </Card>
-        <Card>
-          <h2 className="font-bold mb-2">كميات منخفضة</h2>
+        </div>
+        <div>
+          <h2 className="font-extrabold mb-2">كميات منخفضة</h2>
           {low.length === 0 ? (
-            <p className="text-sm text-gray-400">لا تنبيهات — المخزون بخير</p>
+            <Card><p className="text-sm text-slate-400 text-center py-4">المخزون بخير — لا تنبيهات 🎉</p></Card>
           ) : (
-            <table className="w-full text-sm">
+            <TableWrap>
               <tbody>
                 {low.map((p) => (
-                  <tr key={p.id} className="border-t">
-                    <td className="py-1">{p.name}</td>
-                    <td><Badge tone="red">المتبقي {p.quantity}</Badge></td>
-                    <td className="text-gray-500 text-xs">الحد {p.minQuantity}</td>
+                  <tr key={p.id} className="border-t border-slate-100 first:border-0 hover:bg-slate-50/70 transition">
+                    <td className="p-2.5 font-bold">{p.name}</td>
+                    <td className="p-2.5"><Badge tone="red">المتبقي {p.quantity}</Badge></td>
+                    <td className="p-2.5 text-slate-400 text-xs">الحد {p.minQuantity}</td>
                   </tr>
                 ))}
               </tbody>
-            </table>
+            </TableWrap>
           )}
-          <p className="text-xs text-gray-400 mt-2">آخر تحديث: {fmtDate(new Date())}</p>
-        </Card>
+          <p className="text-xs text-slate-400 mt-2">آخر تحديث: {fmtDate(new Date())}</p>
+        </div>
       </div>
     </div>
   );

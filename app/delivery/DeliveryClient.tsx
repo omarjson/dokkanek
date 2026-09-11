@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "@/components/toast";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { inputCls, btnGhostCls, Card, Badge } from "@/components/ui";
@@ -24,7 +25,7 @@ export function DeliveryClient({ tasks }: { tasks: T[] }) {
       body: JSON.stringify(body),
     });
     if (res.ok) router.refresh();
-    else alert("تعذر التحديث");
+    else toast("تعذر التحديث");
   }
 
   return (

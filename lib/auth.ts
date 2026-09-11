@@ -12,17 +12,6 @@ export async function currentUser() {
   return prisma.user.findUnique({ where: { id }, include: { branch: true } });
 }
 
-export const ROLES: Record<string, string> = {
-  ADMIN: "مدير النظام",
-  MANAGER: "مدير فرع",
-  CASHIER: "كاشير",
-  COURIER: "مندوب توصيل",
-  TECHNICIAN: "فني صيانة",
-};
-
-// الأدوار الإدارية: ترى التكلفة والأرباح والإعدادات والسجلات
-export const ADMIN_ROLES = ["ADMIN", "MANAGER"];
-
 export async function requireRoles(roles: string[]) {
   const user = await currentUser();
   if (!user || !user.active) return null;

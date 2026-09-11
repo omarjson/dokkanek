@@ -2,7 +2,8 @@ export const dynamic = "force-dynamic";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
-import { requireRoles, ADMIN_ROLES } from "@/lib/auth";
+import { requireRoles } from "@/lib/auth";
+import { ADMIN_ROLES } from "@/lib/format";
 import { lyd } from "@/lib/format";
 import { PageTitle, Card, Badge, btnGhostCls } from "@/components/ui";
 

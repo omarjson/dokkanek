@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "@/components/toast";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { inputCls, btnCls, btnGhostCls, Field, Card, Badge } from "@/components/ui";
@@ -30,7 +31,7 @@ export function MaintenanceClient({ tickets }: { tickets: T[] }) {
     });
     const j = await res.json().catch(() => ({}));
     if (res.ok) router.refresh();
-    else alert(j.error || "تعذر التنفيذ");
+    else toast(j.error || "تعذر التنفيذ");
   }
 
   async function create(e: React.FormEvent) {
@@ -44,7 +45,7 @@ export function MaintenanceClient({ tickets }: { tickets: T[] }) {
       setForm({ customerName: "", customerPhone: "", device: "", issue: "", technician: "", cost: "" });
       setOpen(false);
       router.refresh();
-    } else alert("تعذر الحفظ");
+    } else toast("تعذر الحفظ");
   }
 
   return (

@@ -1,15 +1,18 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card, PageTitle, inputCls, btnCls, btnGhostCls } from "@/components/ui";
+import { Card, PageTitle, inputCls, btnCls, btnGhostCls, chipCls, chipActiveCls, Badge } from "@/components/ui";
+import { toast } from "@/components/toast";
+import { IconStar, IconSearch } from "@/components/icons";
 import { lyd, PAY_METHODS } from "@/lib/format";
 
-type P = { id: string; name: string; salePrice: number; quantity: number; sku: string; barcode: string };
+type P = { id: string; name: string; salePrice: number; quantity: number; sku: string; barcode: string; isFavorite: boolean; categoryId: string | null; categoryName: string | null };
 type CartItem = { id: string; name: string; price: number; qty: number; max: number };
 
-export function POSClient({ products, customers }: { products: P[]; customers: { id: string; name: string }[] }) {
+export function POSClient({ products, customers, categories }: { products: P[]; customers: { id: string; name: string }[]; categories: { id: string; name: string }[] }) {
   const router = useRouter();
   const [q, setQ] = useState("");
+  const [cat, setCat] = useState("");
   const [cart, setCart] = useState<CartItem[]>([]);
   const [payMethod, setPayMethod] = useState("CASH");
   const [status, setStatus] = useState("COMPLETED");
@@ -49,21 +52,23 @@ export function POSClient({ products, customers }: { products: P[]; customers: {
     }
     saveOutbox(failed);
     router.refresh();
-    alert(failed.length === 0 ? `تمت مزامنة ${okCount} فاتورة بنجاح` : `زُامن ${okCount} — تعذر ${failed.length}`);
+    if (failed.length === 0) toast(`تمت مزامنة ${okCount} فاتورة بنجاح`, "success");
+    else toast(`زُامن ${okCount} — تعذر ${failed.length}`, "error");
   }
 
-  const list = q
-    ? products.filter((p) => p.name.includes(q) || p.sku.includes(q) || (p.barcode || "").includes(q)).slice(0, 30)
-    : products.slice(0, 30);
+  const list = products
+    .filter((p) => !cat || p.categoryId === cat)
+    .filter((p) => !q || p.name.includes(q) || p.sku.includes(q) || (p.barcode || "").includes(q))
+    .slice(0, 40);
 
   function add(p: P) {
     setCart((c) => {
       const f = c.find((x) => x.id === p.id);
       if (f) {
-        if (f.qty + 1 > p.quantity) { alert(`المتاح فقط ${p.quantity}`); return c; }
+        if (f.qty + 1 > p.quantity) { toast(`المتاح فقط ${p.quantity}`, "error"); return c; }
         return c.map((x) => (x.id === p.id ? { ...x, qty: x.qty + 1 } : x));
       }
-      if (p.quantity < 1) { alert("نفدت الكمية"); return c; }
+      if (p.quantity < 1) { toast("نفدت الكمية", "error"); return c; }
       return [...c, { id: p.id, name: p.name, price: p.salePrice, qty: 1, max: p.quantity }];
     });
   }
@@ -91,16 +96,17 @@ export function POSClient({ products, customers }: { products: P[]; customers: {
         setDone({ no: j.no, id: j.id });
         setCart([]);
         setDiscount("0");
+        toast(`تم حفظ الفاتورة ${j.no}`, "success");
         router.refresh();
       } else {
-        alert(j.error || "تعذر إتمام البيع");
+        toast(j.error || "تعذر إتمام البيع", "error");
       }
     } catch {
       // بلا نت: حفظ محلي للمزامنة لاحقا
       saveOutbox([...outbox, payload]);
       setCart([]);
       setDiscount("0");
-      alert("لا يوجد اتصال — حُفظت الفاتورة في قائمة الانتظار وستُرسل عند عودة النت");
+      toast("لا يوجد اتصال — حُفظت في قائمة الانتظار", "info");
     } finally {
       setLoading(false);
     }
@@ -126,19 +132,49 @@ export function POSClient({ products, customers }: { products: P[]; customers: {
           </div>
         </Card>
       )}
-      <div className="grid md:grid-cols-2 gap-3">
+      <div className="grid lg:grid-cols-5 gap-4 items-start">
+        <div className="lg:col-span-3">
         <Card>
-          <input className={inputCls} placeholder="بحث: اسم / SKU / باركود" value={q} onChange={(e) => setQ(e.target.value)} />
-          <div className="mt-2 max-h-[420px] overflow-auto divide-y">
+          <div className="relative mb-2">
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"><IconSearch /></span>
+            <input className={inputCls + " !pe-10"} placeholder="بحث: اسم / SKU / باركود" value={q} onChange={(e) => setQ(e.target.value)} />
+          </div>
+          {categories.length > 0 && (
+            <div className="flex gap-1.5 overflow-x-auto pb-2 mb-1">
+              <button onClick={() => setCat("")} className={cat === "" ? chipActiveCls : chipCls}>الكل</button>
+              {categories.map((c) => (
+                <button key={c.id} onClick={() => setCat(cat === c.id ? "" : c.id)} className={(cat === c.id ? chipActiveCls : chipCls) + " whitespace-nowrap"}>
+                  {c.name}
+                </button>
+              ))}
+            </div>
+          )}
+          <div className="mt-1 max-h-[440px] overflow-auto grid grid-cols-1 sm:grid-cols-2 gap-2">
             {list.map((p) => (
-              <button key={p.id} onClick={() => add(p)} className="w-full text-right py-2 hover:bg-gray-50 flex justify-between gap-2">
-                <span>{p.name}<span className="text-xs text-gray-400 block">{p.sku} • متاح {p.quantity}</span></span>
-                <b>{lyd(p.salePrice)}</b>
+              <button
+                key={p.id}
+                onClick={() => add(p)}
+                disabled={p.quantity < 1}
+                className="text-right rounded-2xl border border-slate-200 bg-slate-50/60 hover:border-[var(--brand)] hover:bg-white hover:shadow-md active:scale-[0.98] transition p-3 flex justify-between gap-2 disabled:opacity-50"
+              >
+                <span className="min-w-0">
+                  <span className="font-bold text-sm flex items-center gap-1">
+                    {p.isFavorite && <span className="text-amber-500"><IconStar width={14} height={14} /></span>}
+                    <span className="truncate">{p.name}</span>
+                  </span>
+                  <span className="text-xs text-slate-400 block mt-0.5">{p.sku} • متاح {p.quantity}</span>
+                </span>
+                <span className="text-left shrink-0">
+                  <b className="block">{lyd(p.salePrice)}</b>
+                  {p.quantity <= 0 ? <Badge tone="red">نافد</Badge> : p.quantity <= 5 ? <Badge tone="amber">أخير</Badge> : null}
+                </span>
               </button>
             ))}
-            {list.length === 0 && <p className="text-gray-400 text-sm py-4 text-center">لا نتائج</p>}
+            {list.length === 0 && <p className="text-slate-400 text-sm py-4 text-center col-span-full">لا نتائج مطابقة</p>}
           </div>
         </Card>
+        </div>
+        <div className="lg:col-span-2 lg:sticky lg:top-4">
         <Card>
           <h2 className="font-bold mb-2">السلة ({cart.length})</h2>
           {cart.length === 0 && <p className="text-gray-400 text-sm">السلة فارغة — اضغط على صنف لإضافته</p>}
@@ -178,13 +214,15 @@ export function POSClient({ products, customers }: { products: P[]; customers: {
               <input type="number" min="0" className={inputCls} value={discount} onChange={(e) => setDiscount(e.target.value)} />
             </label>
           </div>
-          <div className="flex justify-between items-center mt-3 font-bold text-lg">
-            <span>الإجمالي: {lyd(total)}</span>
-            <button className={btnCls} disabled={loading || cart.length === 0} onClick={checkout}>
-              {loading ? "جاري الحفظ..." : "إتمام البيع"}
-            </button>
+          <div className="flex justify-between items-center mt-3 rounded-2xl bg-slate-950 text-white px-4 py-3">
+            <span className="text-sm text-slate-300">الإجمالي</span>
+            <span className="font-extrabold text-xl">{lyd(total)}</span>
           </div>
+          <button className={btnCls + " w-full mt-2 !py-3.5 text-lg"} disabled={loading || cart.length === 0} onClick={checkout}>
+            {loading ? "جاري الحفظ..." : "إتمام البيع ✓"}
+          </button>
         </Card>
+        </div>
       </div>
     </div>
   );

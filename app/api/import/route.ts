@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { requireRoles, ADMIN_ROLES } from "@/lib/auth";
+import { requireRoles } from "@/lib/auth";
+import { ADMIN_ROLES } from "@/lib/format";
 import { audit } from "@/lib/audit";
 
 type Row = {

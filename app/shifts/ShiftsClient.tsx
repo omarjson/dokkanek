@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "@/components/toast";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { inputCls, btnCls, Field, Card, Badge } from "@/components/ui";
@@ -36,7 +37,7 @@ export function ShiftsClient({ open, history, expected }: { open: Shift | null; 
                 className={btnCls}
                 onClick={async () => {
                   const { ok, j } = await call({ action: "close", closing: Number(closing || expected) });
-                  if (ok) { setLast(j); setClosing(""); router.refresh(); } else alert(j.error || "تعذر الإقفال");
+                  if (ok) { setLast(j); setClosing(""); router.refresh(); } else toast(j.error || "تعذر الإقفال");
                 }}
               >
                 إقفال الوردية
@@ -58,7 +59,7 @@ export function ShiftsClient({ open, history, expected }: { open: Shift | null; 
               className={btnCls}
               onClick={async () => {
                 const { ok, j } = await call({ action: "open", opening: Number(opening || 0) });
-                if (ok) { setOpening(""); router.refresh(); } else alert(j.error || "تعذر الفتح");
+                if (ok) { setOpening(""); router.refresh(); } else toast(j.error || "تعذر الفتح");
               }}
             >
               فتح وردية

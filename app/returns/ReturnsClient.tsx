@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "@/components/toast";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { inputCls, btnCls, Field, Card } from "@/components/ui";
@@ -23,7 +24,7 @@ export function ReturnsClient({ products, returns, damages }: { products: Produc
     if (res.ok) {
       setForm({ productId: "", qty: "1", reason: "" });
       router.refresh();
-    } else alert(j.error || "تعذر الحفظ");
+    } else toast(j.error || "تعذر الحفظ");
   }
 
   return (

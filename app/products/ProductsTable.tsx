@@ -2,6 +2,7 @@
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Badge, btnGhostCls } from "@/components/ui";
+import { confirmDialog, toast } from "@/components/toast";
 import { lyd } from "@/lib/format";
 
 type P = {
@@ -14,26 +15,29 @@ export function ProductsTable({ products }: { products: P[] }) {
   const router = useRouter();
 
   async function patch(id: string, body: object, confirmMsg?: string) {
-    if (confirmMsg && !confirm(confirmMsg)) return;
-    await fetch(`/api/products/${id}`, {
+    if (confirmMsg && !(await confirmDialog(confirmMsg))) return;
+    const res = await fetch(`/api/products/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
+    if (!res.ok) toast("تعذر التعديل", "error");
     router.refresh();
   }
 
   async function remove(id: string, name: string) {
-    if (!confirm(`حذف الصنف "${name}"؟`)) return;
-    await fetch(`/api/products/${id}`, { method: "DELETE" });
+    if (!(await confirmDialog(`حذف الصنف "${name}"؟`))) return;
+    const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
+    if (res.ok) toast("تم الحذف", "success");
+    else toast("تعذر الحذف", "error");
     router.refresh();
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border overflow-x-auto">
+    <div className="bg-white rounded-2xl shadow-[0_1px_3px_rgba(16,24,40,0.08),0_4px_12px_rgba(16,24,40,0.06)] border border-slate-200/70 overflow-x-auto">
       <table className="w-full text-sm min-w-[760px]">
         <thead>
-          <tr className="bg-gray-50 text-gray-600">
+          <tr className="bg-slate-50 text-slate-500 text-[13px]">
             <th className="p-2 text-right">الصنف</th>
             <th className="p-2 text-right">SKU / باركود</th>
             <th className="p-2">التكلفة</th>

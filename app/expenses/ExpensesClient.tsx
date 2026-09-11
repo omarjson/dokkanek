@@ -1,7 +1,9 @@
 "use client";
+import { toast } from "@/components/toast";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { inputCls, btnCls, btnGhostCls, Field, Card } from "@/components/ui";
+import { confirmDialog } from "@/components/toast";
 import { lyd, fmtDate } from "@/lib/format";
 
 type E = { id: string; title: string; amount: number; date: string; note: string };
@@ -17,11 +19,11 @@ export function ExpensesClient({ expenses, total }: { expenses: E[]; total: numb
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...form, amount: Number(form.amount || 0) }),
     });
-    if (res.ok) { setForm({ title: "", amount: "", note: "" }); router.refresh(); } else alert("تعذر الحفظ");
+    if (res.ok) { setForm({ title: "", amount: "", note: "" }); router.refresh(); } else toast("تعذر الحفظ");
   }
 
   async function remove(id: string) {
-    if (!confirm("حذف هذا المصروف؟")) return;
+    if (!(await confirmDialog("حذف هذا المصروف؟"))) return;
     await fetch(`/api/expenses?id=${id}`, { method: "DELETE" });
     router.refresh();
   }

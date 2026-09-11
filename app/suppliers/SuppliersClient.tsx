@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "@/components/toast";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { inputCls, btnCls, btnGhostCls, Field, Card, Badge } from "@/components/ui";
@@ -28,12 +29,12 @@ export function SuppliersClient({ suppliers, products, purchases }: { suppliers:
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, phone }),
     });
-    if (res.ok) { setName(""); setPhone(""); router.refresh(); } else alert("تعذر الحفظ");
+    if (res.ok) { setName(""); setPhone(""); router.refresh(); } else toast("تعذر الحفظ");
   }
 
   async function buy() {
     const items = rows.filter((r) => r.productId && Number(r.qty) > 0).map((r) => ({ productId: r.productId, qty: Number(r.qty), price: Number(r.price || 0) }));
-    if (!supplierId || items.length === 0) { alert("اختر المورد وصنفا واحدا على الأقل"); return; }
+    if (!supplierId || items.length === 0) { toast("اختر المورد وصنفا واحدا على الأقل"); return; }
     const res = await fetch("/api/purchases", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -45,7 +46,7 @@ export function SuppliersClient({ suppliers, products, purchases }: { suppliers:
       setRows([{ productId: "", qty: "1", price: "" }]);
       setPaid("0");
       router.refresh();
-    } else alert(j.error || "تعذر الحفظ");
+    } else toast(j.error || "تعذر الحفظ");
   }
 
   return (

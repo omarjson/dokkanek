@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "@/components/toast";
 import { useState } from "react";
 import { inputCls, btnCls, btnGhostCls, Card } from "@/components/ui";
 
@@ -74,7 +75,7 @@ export function ImportClient() {
     if (res.ok) {
       setResult(j);
       setRows([]);
-    } else alert(j.error || "تعذر الاستيراد");
+    } else toast(j.error || "تعذر الاستيراد");
   }
 
   return (

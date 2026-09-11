@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "@/components/toast";
 import { useState } from "react";
 import { inputCls, btnCls, Field, Card } from "@/components/ui";
 
@@ -32,7 +33,7 @@ export function SettingsForm({ initial }: { initial: Record<string, string> }) {
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
       window.location.reload();
-    } else alert("تعذر الحفظ");
+    } else toast("تعذر الحفظ");
   }
 
   return (

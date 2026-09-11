@@ -1,3 +1,14 @@
+export const ROLES: Record<string, string> = {
+  ADMIN: "مدير النظام",
+  MANAGER: "مدير فرع",
+  CASHIER: "كاشير",
+  COURIER: "مندوب توصيل",
+  TECHNICIAN: "فني صيانة",
+};
+
+// الأدوار الإدارية — ثابت عميل-آمن (لا يستورد next/headers)
+export const ADMIN_ROLES = ["ADMIN", "MANAGER"];
+
 export function lyd(n: number | null | undefined): string {
   const v = Number(n ?? 0);
   return `${v.toFixed(2)} د.ل`;

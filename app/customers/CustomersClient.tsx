@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "@/components/toast";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { inputCls, btnCls, btnGhostCls, Field, Badge } from "@/components/ui";
@@ -25,7 +26,7 @@ export function CustomersClient({ customers }: { customers: Customer[] }) {
       setForm({ name: "", phone: "", address: "", creditLimit: "" });
       setShowAdd(false);
       router.refresh();
-    } else alert("تعذر الحفظ");
+    } else toast("تعذر الحفظ");
   }
 
   async function doPay(customerId: string) {
@@ -39,7 +40,7 @@ export function CustomersClient({ customers }: { customers: Customer[] }) {
       setPayFor(null);
       setPay({ saleId: "", amount: "", method: "CASH" });
       router.refresh();
-    } else alert(j.error || "تعذر السداد");
+    } else toast(j.error || "تعذر السداد");
   }
 
   return (

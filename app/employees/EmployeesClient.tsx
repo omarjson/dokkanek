@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "@/components/toast";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { inputCls, btnCls, btnGhostCls, Field, Card } from "@/components/ui";
@@ -23,7 +24,7 @@ export function EmployeesClient({ employees }: { employees: E[] }) {
       setForm({ name: "", phone: "", title: "", salary: "", commissionRate: "" });
       setOpen(false);
       router.refresh();
-    } else alert("تعذر الحفظ");
+    } else toast("تعذر الحفظ");
   }
 
   async function att(id: string, action: string) {
@@ -34,7 +35,7 @@ export function EmployeesClient({ employees }: { employees: E[] }) {
     });
     const j = await res.json().catch(() => ({}));
     if (res.ok) router.refresh();
-    else alert(j.error || "تعذر التسجيل");
+    else toast(j.error || "تعذر التسجيل");
   }
 
   return (

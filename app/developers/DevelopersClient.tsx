@@ -1,19 +1,20 @@
 "use client";
 import { useState } from "react";
 import { inputCls, btnCls, Card, Field } from "@/components/ui";
+import { confirmDialog, toast } from "@/components/toast";
 
 export function DevelopersClient({ initialKey }: { initialKey: string }) {
   const [key, setKey] = useState(initialKey);
   const [loading, setLoading] = useState(false);
 
   async function regen() {
-    if (!confirm("توليد مفتاح جديد يبطل المفتاح القديم فورا — متابعة؟")) return;
+    if (!(await confirmDialog("توليد مفتاح جديد يبطل المفتاح القديم فورا — متابعة؟"))) return;
     setLoading(true);
     const res = await fetch("/api/v1/key", { method: "POST" });
     const j = await res.json().catch(() => ({}));
     setLoading(false);
     if (res.ok) setKey(j.key);
-    else alert("تعذر التوليد");
+    else toast("تعذر التوليد");
   }
 
   return (

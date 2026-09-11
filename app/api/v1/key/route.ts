@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { randomBytes } from "crypto";
 import { prisma } from "@/lib/db";
-import { requireRoles, ADMIN_ROLES } from "@/lib/auth";
+import { requireRoles } from "@/lib/auth";
+import { ADMIN_ROLES } from "@/lib/format";
 import { audit } from "@/lib/audit";
 
 // توليد/عرض مفتاح الـ API (للإدارة فقط) — يُحفظ في الإعدادات

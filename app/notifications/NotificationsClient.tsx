@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "@/components/toast";
 import { useRouter } from "next/navigation";
 import { btnCls, Card, Badge } from "@/components/ui";
 import { fmtDate } from "@/lib/format";
@@ -23,7 +24,7 @@ export function NotificationsClient({ items, enabled }: { items: N[]; enabled: b
       body: JSON.stringify({ action: "retry" }),
     });
     if (res.ok) router.refresh();
-    else alert("تعذرت إعادة المحاولة");
+    else toast("تعذرت إعادة المحاولة");
   }
 
   return (

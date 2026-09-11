@@ -1,15 +1,16 @@
 import "./globals.css";
 import type { CSSProperties, ReactNode } from "react";
 import { Cairo } from "next/font/google";
-import Link from "next/link";
 import { prisma } from "@/lib/db";
-import { LogoutButton } from "@/components/LogoutButton";
+import { currentUser } from "@/lib/auth";
+import { ADMIN_ROLES } from "@/lib/format";
+import { Sidebar, type NavLink } from "@/components/Sidebar";
+import { Toaster } from "@/components/toast";
 import { ServiceWorker } from "@/components/ServiceWorker";
-import { currentUser, ROLES, ADMIN_ROLES } from "@/lib/auth";
 
 const cairo = Cairo({ subsets: ["arabic", "latin"], weight: ["400", "600", "700", "800"] });
 
-export const viewport = { themeColor: "#0d6efd" };
+export const viewport = { themeColor: "#020617" };
 
 async function getSettings(): Promise<Record<string, string>> {
   try {
@@ -20,25 +21,25 @@ async function getSettings(): Promise<Record<string, string>> {
   }
 }
 
-const LINKS: { href: string; label: string; roles?: string[] }[] = [
-  { href: "/", label: "الرئيسية" },
-  { href: "/pos", label: "نقطة البيع" },
-  { href: "/products", label: "الأصناف" },
-  { href: "/sales", label: "الفواتير" },
-  { href: "/customers", label: "الزبائن والديون" },
-  { href: "/suppliers", label: "الموردون" },
-  { href: "/expenses", label: "المصروفات" },
-  { href: "/delivery", label: "التوصيل" },
-  { href: "/maintenance", label: "الصيانة" },
-  { href: "/returns", label: "الرواجع والتالف" },
-  { href: "/shifts", label: "الورديات" },
-  { href: "/import", label: "استيراد", roles: ADMIN_ROLES },
-  { href: "/reports", label: "التقارير", roles: ADMIN_ROLES },
-  { href: "/developers", label: "المطورون", roles: ADMIN_ROLES },
-  { href: "/notifications", label: "التنبيهات", roles: ADMIN_ROLES },
-  { href: "/employees", label: "الموظفون", roles: ADMIN_ROLES },
-  { href: "/audit", label: "سجل الأمن", roles: ADMIN_ROLES },
-  { href: "/settings", label: "الإعدادات", roles: ADMIN_ROLES },
+const LINKS: NavLink[] = [
+  { href: "/", label: "الرئيسية", icon: "dashboard" },
+  { href: "/pos", label: "نقطة البيع", icon: "pos" },
+  { href: "/products", label: "الأصناف", icon: "products" },
+  { href: "/sales", label: "الفواتير", icon: "sales" },
+  { href: "/customers", label: "الزبائن والديون", icon: "customers" },
+  { href: "/suppliers", label: "الموردون", icon: "suppliers" },
+  { href: "/expenses", label: "المصروفات", icon: "expenses" },
+  { href: "/delivery", label: "التوصيل", icon: "delivery" },
+  { href: "/maintenance", label: "الصيانة", icon: "maintenance" },
+  { href: "/returns", label: "الرواجع والتالف", icon: "returns" },
+  { href: "/shifts", label: "الورديات", icon: "shifts" },
+  { href: "/import", label: "استيراد", icon: "import", roles: ADMIN_ROLES },
+  { href: "/reports", label: "التقارير", icon: "reports", roles: ADMIN_ROLES },
+  { href: "/developers", label: "المطورون", icon: "developers", roles: ADMIN_ROLES },
+  { href: "/employees", label: "الموظفون", icon: "employees", roles: ADMIN_ROLES },
+  { href: "/notifications", label: "التنبيهات", icon: "notifications", roles: ADMIN_ROLES },
+  { href: "/audit", label: "سجل الأمن", icon: "audit", roles: ADMIN_ROLES },
+  { href: "/settings", label: "الإعدادات", icon: "settings", roles: ADMIN_ROLES },
 ];
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
@@ -51,41 +52,20 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
     <html lang="ar" dir="rtl">
       <body className={cairo.className} style={{ "--brand": color } as CSSProperties}>
         <ServiceWorker />
-        <header className="bg-gradient-to-l from-[var(--brand)] to-black/40 text-white shadow-lg sticky top-0 z-20 no-print">
-          <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
-            <Link href="/" className="font-extrabold text-xl tracking-tight flex items-center gap-2">
-              <span className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white/20 text-lg">🏪</span>
-              {storeName}
-            </Link>
-            {user && (
-              <div className="text-sm flex items-center gap-3">
-                <span className="hidden sm:inline bg-white/15 rounded-full px-3 py-1">
-                  {user.name} ({ROLES[user.role] ?? user.role})
-                </span>
-                <LogoutButton />
-              </div>
-            )}
+        <Toaster />
+        {user ? (
+          <div className="min-h-screen md:flex md:items-stretch">
+            <Sidebar links={LINKS} user={{ name: user.name, role: user.role }} storeName={storeName} />
+            <div className="flex-1 min-w-0 flex flex-col">
+              <main className="flex-1 w-full max-w-6xl mx-auto px-3 sm:px-5 py-4 sm:py-6">{children}</main>
+              <footer className="text-center text-xs text-slate-400 pb-5 no-print">
+                {storeName} — منظومة مفتوحة المصدر (MIT)
+              </footer>
+            </div>
           </div>
-          {user && (
-            <nav className="bg-black/25 backdrop-blur">
-              <div className="max-w-6xl mx-auto px-4 py-2 flex flex-wrap gap-1.5 text-sm">
-                {LINKS.filter((l) => !l.roles || (user && l.roles.includes(user.role))).map((l) => (
-                  <Link
-                    key={l.href}
-                    href={l.href}
-                    className="rounded-full px-3 py-1.5 bg-white/10 hover:bg-white/25 transition font-semibold"
-                  >
-                    {l.label}
-                  </Link>
-                ))}
-              </div>
-            </nav>
-          )}
-        </header>
-        <main className="max-w-6xl mx-auto px-4 py-6">{children}</main>
-        <footer className="text-center text-xs text-gray-500 pb-6 no-print">
-          {storeName} — منظومة مفتوحة المصدر (MIT)
-        </footer>
+        ) : (
+          <main>{children}</main>
+        )}
       </body>
     </html>
   );

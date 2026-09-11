@@ -1,4 +1,5 @@
 "use client";
+import { toast } from "@/components/toast";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { inputCls, btnCls, Field } from "@/components/ui";
@@ -33,7 +34,7 @@ export function ProductForm({ categories, warehouses }: { categories: { id: stri
       setOpen(false);
       router.refresh();
     } else {
-      alert("تعذر الحفظ — تأكد من الاسم والسعر");
+      toast("تعذر الحفظ — تأكد من الاسم والسعر");
     }
   }
 
