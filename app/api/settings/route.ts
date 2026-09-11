@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit";
-import { cookies } from "next/headers";
+import { requireRoles, ADMIN_ROLES } from "@/lib/auth";
 
 export async function GET() {
   const rows = await prisma.setting.findMany();
@@ -9,9 +9,8 @@ export async function GET() {
 }
 
 export async function PUT(req: Request) {
-  const me = cookies().get("dk_session")?.value
-    ? await prisma.user.findUnique({ where: { id: cookies().get("dk_session")!.value } })
-    : null;
+  const me = await requireRoles(ADMIN_ROLES);
+  if (!me) return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
   const b = await req.json();
   for (const [key, value] of Object.entries(b)) {
     await prisma.setting.upsert({

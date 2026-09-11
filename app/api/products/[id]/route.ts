@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { requireRoles, ADMIN_ROLES } from "@/lib/auth";
 import { audit } from "@/lib/audit";
 import { cookies } from "next/headers";
 
@@ -39,7 +40,8 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
 }
 
 export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
-  const me = await who();
+  const me = await requireRoles(ADMIN_ROLES);
+  if (!me) return NextResponse.json({ error: "غير مصرح — الحذف للإدارة فقط" }, { status: 403 });
   const used = await prisma.saleItem.count({ where: { productId: params.id } });
   if (used > 0) {
     await prisma.product.update({ where: { id: params.id }, data: { active: false } });

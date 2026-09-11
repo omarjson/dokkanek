@@ -19,3 +19,13 @@ export const ROLES: Record<string, string> = {
   COURIER: "مندوب توصيل",
   TECHNICIAN: "فني صيانة",
 };
+
+// الأدوار الإدارية: ترى التكلفة والأرباح والإعدادات والسجلات
+export const ADMIN_ROLES = ["ADMIN", "MANAGER"];
+
+export async function requireRoles(roles: string[]) {
+  const user = await currentUser();
+  if (!user || !user.active) return null;
+  if (!roles.includes(user.role)) return null;
+  return user;
+}

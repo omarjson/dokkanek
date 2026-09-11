@@ -1,9 +1,13 @@
 export const dynamic = "force-dynamic";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
+import { requireRoles, ADMIN_ROLES } from "@/lib/auth";
 import { fmtDate } from "@/lib/format";
 import { PageTitle, Card } from "@/components/ui";
 
 export default async function AuditPage() {
+  const me = await requireRoles(ADMIN_ROLES);
+  if (!me) redirect("/");
   const logs = await prisma.auditLog.findMany({ orderBy: { createdAt: "desc" }, take: 200 });
   return (
     <div>

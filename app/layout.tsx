@@ -2,7 +2,7 @@ import type { CSSProperties, ReactNode } from "react";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { LogoutButton } from "@/components/LogoutButton";
-import { currentUser, ROLES } from "@/lib/auth";
+import { currentUser, ROLES, ADMIN_ROLES } from "@/lib/auth";
 
 async function getSettings(): Promise<Record<string, string>> {
   try {
@@ -13,7 +13,7 @@ async function getSettings(): Promise<Record<string, string>> {
   }
 }
 
-const LINKS = [
+const LINKS: { href: string; label: string; roles?: string[] }[] = [
   { href: "/", label: "الرئيسية" },
   { href: "/pos", label: "نقطة البيع" },
   { href: "/products", label: "الأصناف" },
@@ -23,9 +23,11 @@ const LINKS = [
   { href: "/expenses", label: "المصروفات" },
   { href: "/delivery", label: "التوصيل" },
   { href: "/maintenance", label: "الصيانة" },
-  { href: "/employees", label: "الموظفون" },
-  { href: "/audit", label: "سجل الأمن" },
-  { href: "/settings", label: "الإعدادات" },
+  { href: "/returns", label: "الرواجع والتالف" },
+  { href: "/shifts", label: "الورديات" },
+  { href: "/employees", label: "الموظفون", roles: ADMIN_ROLES },
+  { href: "/audit", label: "سجل الأمن", roles: ADMIN_ROLES },
+  { href: "/settings", label: "الإعدادات", roles: ADMIN_ROLES },
 ];
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
@@ -52,7 +54,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           {user && (
             <nav className="bg-black/20">
               <div className="max-w-6xl mx-auto px-4 py-2 flex flex-wrap gap-x-4 gap-y-1 text-sm">
-                {LINKS.map((l) => (
+                {LINKS.filter((l) => !l.roles || (user && l.roles.includes(user.role))).map((l) => (
                   <Link key={l.href} href={l.href} className="hover:underline">
                     {l.label}
                   </Link>

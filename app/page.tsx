@@ -7,7 +7,7 @@ import { PageTitle, Card, Badge } from "@/components/ui";
 export default async function Home() {
   const start = new Date();
   start.setHours(0, 0, 0, 0);
-  const [productsCount, customersCount, todayAgg, lowStock, recent, pending, tickets, tasks] =
+  const [productsCount, customersCount, todayAgg, lowStock, recent, pending, tickets, tasks, openShift, todayItems] =
     await Promise.all([
       prisma.product.count({ where: { active: true } }),
       prisma.customer.count(),
@@ -28,9 +28,16 @@ export default async function Home() {
       prisma.sale.count({ where: { status: { in: ["PENDING", "HELD"] } } }),
       prisma.maintenanceTicket.count({ where: { status: { not: "DELIVERED" } } }),
       prisma.courierTask.count({ where: { status: { in: ["PENDING", "WITH_COURIER"] } } }),
+      prisma.cashShift.findFirst({ where: { status: "OPEN" }, orderBy: { openedAt: "desc" } }),
+      prisma.saleItem.findMany({
+        where: { sale: { date: { gte: start }, status: { in: ["COMPLETED", "COURIER"] } } },
+        include: { product: { select: { costPrice: true } } },
+      }),
     ]);
 
   const low = lowStock.filter((p) => p.quantity <= p.minQuantity);
+  // الربح التقريبي اليوم = المبيعات − التكلفة بسعر التكلفة الحالي
+  const todayProfit = todayItems.reduce((s, it) => s + (it.price - (it.product?.costPrice ?? 0)) * it.qty, 0);
 
   return (
     <div>
@@ -39,10 +46,14 @@ export default async function Home() {
         <Card>
           <div className="text-sm text-gray-500">مبيعات اليوم</div>
           <div className="text-xl font-bold">{lyd(todayAgg._sum.total)}</div>
+          <div className="text-xs text-green-700 mt-1">الربح التقريبي: {lyd(todayProfit)}</div>
         </Card>
         <Card>
           <div className="text-sm text-gray-500">الأصناف</div>
           <div className="text-xl font-bold">{productsCount}</div>
+          <div className="text-xs text-gray-500 mt-1">
+            الوردية: {openShift ? <Link href="/shifts" className="text-green-700 font-bold hover:underline">مفتوحة</Link> : <Link href="/shifts" className="hover:underline">مغلقة — افتح</Link>}
+          </div>
         </Card>
         <Card>
           <div className="text-sm text-gray-500">الزبائن</div>
