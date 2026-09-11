@@ -79,7 +79,7 @@ export function Sidebar({
         {active && !mini && (
           <span className="absolute inset-y-1.5 start-0 w-1 rounded-full bg-[var(--brand)]" aria-hidden />
         )}
-        <span className={`shrink-0 ${active ? "text-white" : ""}`}>
+        <span className={`shrink-0 ${active ? "text-[var(--brand)]" : ""}`}>
           <Ico width={19} height={19} />
         </span>
         {!mini && <span className="truncate">{l.label}</span>}
@@ -109,7 +109,7 @@ export function Sidebar({
             return (
               <div key={sec} className="mt-3 first:mt-1">
                 {!mini && (
-                  <div className="px-3 mb-1 text-[11px] font-bold text-slate-500">{sec}</div>
+                  <div className="px-3 mb-1 text-[11px] font-bold tracking-wide text-slate-500">{sec}</div>
                 )}
                 <div className="flex flex-col gap-0.5">{items.map((l) => linkRow(l, mini))}</div>
               </div>
@@ -178,8 +178,8 @@ export function Sidebar({
       </div>
       {/* جانبي لسطح المكتب */}
       <aside
-        className={`hidden md:flex shrink-0 bg-slate-950 text-white sticky top-0 h-screen no-print transition-all ${
-          collapsed ? "w-[72px]" : "w-60"
+        className={`hidden md:flex shrink-0 bg-slate-950 text-white sticky top-0 h-screen no-print transition-all duration-200 overflow-hidden border-e border-white/5 ${
+          collapsed ? "w-20" : "w-56"
         }`}
       >
         {navBody(collapsed)}
