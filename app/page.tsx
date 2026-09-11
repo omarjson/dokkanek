@@ -52,6 +52,23 @@ export default async function Home() {
 
   const low = lowStock.filter((p) => p.quantity <= p.minQuantity).slice(0, 5);
   const todayProfit = todayItems.reduce((s, it) => s + (it.price - (it.product?.costPrice ?? 0)) * it.qty, 0);
+  // مبيعات آخر 7 أيام للرسم
+  const week: { label: string; total: number }[] = [];
+  const dayNames = ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+  const weekSales = await prisma.sale.findMany({
+    where: { date: { gte: new Date(Date.now() - 7 * 86400000) }, status: { in: ["COMPLETED", "COURIER"] } },
+    select: { date: true, total: true },
+  });
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() - i);
+    const next = new Date(d);
+    next.setDate(next.getDate() + 1);
+    const total = weekSales.filter((s) => s.date >= d && s.date < next).reduce((s, x) => s + x.total, 0);
+    week.push({ label: i === 0 ? "اليوم" : dayNames[d.getDay()], total });
+  }
+  const weekMax = Math.max(1, ...week.map((w) => w.total));
   const { enabled } = await getModuleState();
   const quick = QUICK.filter((q) => !q.mod || enabled[q.mod]);
   const alertParts: string[] = [];
@@ -122,8 +139,20 @@ export default async function Home() {
         />
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-4 items-start">
-        <div className="min-w-0">
+      <Card>
+        <h2 className="font-extrabold text-[15px] mb-3">مبيعات آخر 7 أيام</h2>
+        <div className="flex items-end gap-1.5 h-32" dir="ltr">
+          {week.map((w) => (
+            <div key={w.label} className="flex-1 flex flex-col items-center gap-1 min-w-0">
+              <span className="text-[11px] font-bold tabular-nums">{w.total >= 1000 ? `${(w.total / 1000).toFixed(1)}k` : Math.round(w.total)}</span>
+              <div className="w-full max-w-10 rounded-t-lg bg-[var(--brand)]/85 min-h-[4px]" style={{ height: `${Math.max(3, Math.round((w.total / weekMax) * 100))}%` }} title={`${w.label}: ${lyd(w.total)}`} />
+              <span className="text-[10px] text-slate-500 truncate" dir="rtl">{w.label}</span>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      <div className="grid lg:grid-cols-2 gap-4 items-start">        <div className="min-w-0">
           <div className="flex items-center justify-between mb-2">
             <h2 className="font-extrabold text-[15px]">أحدث الفواتير</h2>
             <Link href="/sales" className="text-xs font-bold text-[var(--brand)] hover:underline">عرض الكل</Link>

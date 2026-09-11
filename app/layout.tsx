@@ -44,6 +44,7 @@ const LINKS: NavLink[] = [
   { href: "/reports", label: "التقارير", icon: "reports", section: "الإدارة", mod: "reports", roles: ADMIN_ROLES },
   { href: "/developers", label: "المطورون", icon: "developers", section: "الإدارة", mod: "developers", roles: ADMIN_ROLES },
   { href: "/employees", label: "الموظفون", icon: "employees", section: "الإدارة", mod: "employees", roles: ADMIN_ROLES },
+  { href: "/branches", label: "الفروع", icon: "store", section: "الإدارة", roles: ADMIN_ROLES },
   { href: "/users", label: "المستخدمون", icon: "customers", section: "الإدارة", roles: ADMIN_ROLES },
   { href: "/notifications", label: "التنبيهات", icon: "notifications", section: "الإدارة", mod: "notifications", roles: ADMIN_ROLES },
   { href: "/audit", label: "سجل الأمن", icon: "audit", section: "الإدارة", roles: ADMIN_ROLES },

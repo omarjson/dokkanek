@@ -17,6 +17,24 @@ export function CustomersClient({ customers }: { customers: Customer[] }) {
   const [form, setForm] = useState({ name: "", phone: "", address: "", creditLimit: "" });
   const [pay, setPay] = useState({ saleId: "", amount: "", method: "CASH" });
   const [paying, setPaying] = useState(false);
+  const [editing, setEditing] = useState<null | { id: string; name: string; phone: string; creditLimit: string }>(null);
+
+  async function saveEdit() {
+    if (!editing || !editing.name.trim()) {
+      toast("اسم الزبون مطلوب", "error");
+      return;
+    }
+    const res = await fetch(`/api/customers/${editing.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: editing.name.trim(), phone: editing.phone, creditLimit: Number(editing.creditLimit || 0) }),
+    });
+    if (res.ok) {
+      setEditing(null);
+      toast("تم حفظ التعديل", "success");
+      router.refresh();
+    } else toast("تعذر الحفظ", "error");
+  }
 
   async function add(e: React.FormEvent) {
     e.preventDefault();
@@ -93,7 +111,23 @@ export function CustomersClient({ customers }: { customers: Customer[] }) {
                   {c.creditLimit > 0 && c.balance > c.creditLimit && <span className="block mt-0.5"><Badge tone="red">تجاوز السقف!</Badge></span>}
                 </td>
                 <td className="p-2">
-                  <button className={btnXsCls} onClick={() => setPayFor(payFor === c.id ? null : c.id)}>سداد</button>
+                  <div className="flex flex-wrap gap-1">
+                    <button className={btnXsCls} onClick={() => setPayFor(payFor === c.id ? null : c.id)}>سداد</button>
+                    <button className={btnXsCls} onClick={() => setEditing({ id: c.id, name: c.name, phone: c.phone, creditLimit: String(c.creditLimit) })}>تعديل</button>
+                  </div>
+                  {editing?.id === c.id && (
+                    <div className="mt-2 border rounded-lg p-2 bg-amber-50/60 grid gap-1.5">
+                      <input className={inputCls + " !py-1.5 text-sm"} value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} placeholder="الاسم" />
+                      <div className="flex gap-1.5">
+                        <input className={inputCls + " !py-1.5 text-sm"} value={editing.phone} onChange={(e) => setEditing({ ...editing, phone: e.target.value })} placeholder="الهاتف" />
+                        <input type="number" min="0" className={inputCls + " !py-1.5 text-sm"} value={editing.creditLimit} onChange={(e) => setEditing({ ...editing, creditLimit: e.target.value })} placeholder="السقف" />
+                      </div>
+                      <div className="flex gap-1.5">
+                        <button className={btnXsCls} onClick={saveEdit}>حفظ</button>
+                        <button className={btnXsCls} onClick={() => setEditing(null)}>إلغاء</button>
+                      </div>
+                    </div>
+                  )}
                   {payFor === c.id && (
                     <div className="mt-2 border rounded-lg p-2 bg-slate-50 grid gap-2">
                       <select className={inputCls} value={pay.saleId} onChange={(e) => setPay({ ...pay, saleId: e.target.value })}>

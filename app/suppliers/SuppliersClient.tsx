@@ -1,5 +1,6 @@
 "use client";
 import { toast } from "@/components/toast";
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { inputCls, btnCls, btnGhostCls, btnXsCls, Field, Card, Badge, SectionTitle } from "@/components/ui";
@@ -25,6 +26,24 @@ export function SuppliersClient({ suppliers, products, purchases }: { suppliers:
   const [payFor, setPayFor] = useState<string | null>(null);
   const [payAmt, setPayAmt] = useState("");
   const [paying, setPaying] = useState(false);
+  const [editing, setEditing] = useState<null | { id: string; name: string; phone: string }>(null);
+
+  async function saveEdit() {
+    if (!editing || !editing.name.trim()) {
+      toast("اسم المورد مطلوب", "error");
+      return;
+    }
+    const res = await fetch(`/api/suppliers/${editing.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: editing.name.trim(), phone: editing.phone }),
+    });
+    if (res.ok) {
+      setEditing(null);
+      toast("تم حفظ التعديل", "success");
+      router.refresh();
+    } else toast("تعذر الحفظ", "error");
+  }
 
   async function paySupplier(id: string) {
     if (paying) return;
@@ -119,19 +138,30 @@ export function SuppliersClient({ suppliers, products, purchases }: { suppliers:
             <tbody>
               {suppliers.map((s) => (
                 <tr key={s.id} className="border-t">
-                  <td className="py-1 font-bold">{s.name}<span className="block text-xs text-slate-500 font-normal">{s.phone}</span></td>
+                  <td className="py-1 font-bold"><Link href={`/suppliers/${s.id}`} className="hover:text-[var(--brand)] hover:underline">{s.name}</Link><span className="block text-xs text-slate-500 font-normal">{s.phone}</span></td>
                   <td className="text-center">{s.balance > 0 ? <Badge tone="red">{lyd(s.balance)}</Badge> : "لا ديون"}</td>
                   <td className="p-1">
-                    {s.balance > 0 && (
-                      <>
+                    <div className="flex flex-wrap gap-1">
+                      {s.balance > 0 && (
                         <button className={btnXsCls} onClick={() => setPayFor(payFor === s.id ? null : s.id)}>سداد</button>
-                        {payFor === s.id && (
-                          <div className="flex gap-1 mt-1">
-                            <input type="number" min="0.01" step="0.01" placeholder="المبلغ" className={inputCls + " !py-1.5 text-sm min-w-0 flex-1"} value={payAmt} onChange={(e) => setPayAmt(e.target.value)} />
-                            <button className={btnXsCls} disabled={paying} onClick={() => paySupplier(s.id)}>{paying ? "جاري..." : "تأكيد"}</button>
-                          </div>
-                        )}
-                      </>
+                      )}
+                      <button className={btnXsCls} onClick={() => setEditing({ id: s.id, name: s.name, phone: s.phone })}>تعديل</button>
+                    </div>
+                    {s.balance > 0 && payFor === s.id && (
+                      <div className="flex gap-1 mt-1">
+                        <input type="number" min="0.01" step="0.01" placeholder="المبلغ" className={inputCls + " !py-1.5 text-sm min-w-0 flex-1"} value={payAmt} onChange={(e) => setPayAmt(e.target.value)} />
+                        <button className={btnXsCls} disabled={paying} onClick={() => paySupplier(s.id)}>{paying ? "جاري..." : "تأكيد"}</button>
+                      </div>
+                    )}
+                    {editing?.id === s.id && (
+                      <div className="mt-1 border rounded-lg p-2 bg-amber-50/60 grid gap-1.5">
+                        <input className={inputCls + " !py-1.5 text-sm"} value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} placeholder="الاسم" />
+                        <input className={inputCls + " !py-1.5 text-sm"} value={editing.phone} onChange={(e) => setEditing({ ...editing, phone: e.target.value })} placeholder="الهاتف" />
+                        <div className="flex gap-1.5">
+                          <button className={btnXsCls} onClick={saveEdit}>حفظ</button>
+                          <button className={btnXsCls} onClick={() => setEditing(null)}>إلغاء</button>
+                        </div>
+                      </div>
                     )}
                   </td>
                 </tr>
