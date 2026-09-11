@@ -116,3 +116,6 @@ export const IconTrend = (p: SVGProps<SVGSVGElement>) => (
 export const IconClipboard = (p: SVGProps<SVGSVGElement>) => (
   <Base {...p}><rect x="5" y="4" width="14" height="17" rx="2" /><path d="M9 4a3 3 0 0 1 6 0" /><path d="M9 11l2 2 4-4" /></Base>
 );
+export const IconTag = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}><path d="M3 12V4h8l9 9-8 8-9-9z" /><circle cx="8" cy="9" r="1.5" /></Base>
+);
