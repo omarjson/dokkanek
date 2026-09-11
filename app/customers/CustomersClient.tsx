@@ -15,6 +15,7 @@ export function CustomersClient({ customers }: { customers: Customer[] }) {
   const [payFor, setPayFor] = useState<string | null>(null);
   const [form, setForm] = useState({ name: "", phone: "", address: "", creditLimit: "" });
   const [pay, setPay] = useState({ saleId: "", amount: "", method: "CASH" });
+  const [paying, setPaying] = useState(false);
 
   async function add(e: React.FormEvent) {
     e.preventDefault();
@@ -31,12 +32,15 @@ export function CustomersClient({ customers }: { customers: Customer[] }) {
   }
 
   async function doPay(customerId: string) {
+    if (paying) return;
+    setPaying(true);
     const res = await fetch("/api/payments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ customerId, saleId: pay.saleId || null, amount: Number(pay.amount), method: pay.method }),
     });
     const j = await res.json().catch(() => ({}));
+    setPaying(false);
     if (res.ok) {
       setPayFor(null);
       setPay({ saleId: "", amount: "", method: "CASH" });
@@ -90,7 +94,7 @@ export function CustomersClient({ customers }: { customers: Customer[] }) {
                           <option value="CARD">بطاقة</option>
                           <option value="TRANSFER">تحويل</option>
                         </select>
-                        <button className={btnCls} onClick={() => doPay(c.id)}>تأكيد</button>
+                        <button className={btnCls} disabled={paying} onClick={() => doPay(c.id)}>{paying ? "جاري..." : "تأكيد"}</button>
                       </div>
                     </div>
                   )}

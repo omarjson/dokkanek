@@ -22,6 +22,16 @@ export function ShiftsClient({ open, history, expected }: { open: Shift | null; 
   const [opening, setOpening] = useState("");
   const [closing, setClosing] = useState("");
   const [last, setLast] = useState<{ expected: number; closing: number; diff: number } | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  async function act(body: object, onOk: (j: { expected: number; closing: number; diff: number }) => void) {
+    if (busy) return;
+    setBusy(true);
+    const { ok, j } = await call(body);
+    setBusy(false);
+    if (ok) onOk(j);
+    else toast(j.error || "تعذر التنفيذ");
+  }
 
   return (
     <div>
@@ -36,12 +46,10 @@ export function ShiftsClient({ open, history, expected }: { open: Shift | null; 
               </Field>
               <button
                 className={btnCls}
-                onClick={async () => {
-                  const { ok, j } = await call({ action: "close", closing: Number(closing || expected) });
-                  if (ok) { setLast(j); setClosing(""); router.refresh(); } else toast(j.error || "تعذر الإقفال");
-                }}
+                disabled={busy}
+                onClick={() => act({ action: "close", closing: Number(closing || expected) }, (j) => { setLast(j); setClosing(""); router.refresh(); })}
               >
-                إقفال الوردية
+                {busy ? "جاري..." : "إقفال الوردية"}
               </button>
             </div>
             {last && (
@@ -58,12 +66,10 @@ export function ShiftsClient({ open, history, expected }: { open: Shift | null; 
             </Field>
             <button
               className={btnCls}
-              onClick={async () => {
-                const { ok, j } = await call({ action: "open", opening: Number(opening || 0) });
-                if (ok) { setOpening(""); router.refresh(); } else toast(j.error || "تعذر الفتح");
-              }}
+              disabled={busy}
+              onClick={() => act({ action: "open", opening: Number(opening || 0) }, () => { setOpening(""); router.refresh(); })}
             >
-              فتح وردية
+              {busy ? "جاري..." : "فتح وردية"}
             </button>
           </div>
         )}

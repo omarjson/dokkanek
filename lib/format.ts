@@ -35,6 +35,7 @@ export const SALE_STATUS: Record<string, string> = {
   HELD: "معلقة",
   COURIER: "بحوزة مندوب",
   RETURNED: "مرتجعة",
+  CANCELLED: "ملغاة",
 };
 
 export const PAY_METHODS: Record<string, string> = {
