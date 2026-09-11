@@ -13,6 +13,9 @@ export function middleware(req: NextRequest) {
     pathname === "/icon.svg" ||
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/api/track") ||
+    pathname.startsWith("/api/v1/docs") ||
+    pathname.startsWith("/api/v1/products") ||
+    pathname.startsWith("/api/v1/sales") ||
     pathname.startsWith("/_next") ||
     pathname === "/favicon.ico"
   ) {

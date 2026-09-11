@@ -33,6 +33,8 @@ const LINKS: { href: string; label: string; roles?: string[] }[] = [
   { href: "/returns", label: "الرواجع والتالف" },
   { href: "/shifts", label: "الورديات" },
   { href: "/import", label: "استيراد", roles: ADMIN_ROLES },
+  { href: "/reports", label: "التقارير", roles: ADMIN_ROLES },
+  { href: "/developers", label: "المطورون", roles: ADMIN_ROLES },
   { href: "/notifications", label: "التنبيهات", roles: ADMIN_ROLES },
   { href: "/employees", label: "الموظفون", roles: ADMIN_ROLES },
   { href: "/audit", label: "سجل الأمن", roles: ADMIN_ROLES },
