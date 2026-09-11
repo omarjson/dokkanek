@@ -36,6 +36,7 @@ const LINKS: NavLink[] = [
   { href: "/shifts", label: "الورديات", icon: "shifts", section: "المخزون", mod: "shifts" },
   { href: "/delivery", label: "التوصيل", icon: "delivery", section: "الميدان", mod: "delivery" },
   { href: "/maintenance", label: "الصيانة", icon: "maintenance", section: "الميدان", mod: "maintenance" },
+  { href: "/my-work", label: "مهامي", icon: "employees", section: "الميدان", roles: ["COURIER", "TECHNICIAN"] },
   { href: "/import", label: "استيراد", icon: "import", section: "الإدارة", mod: "import", roles: ADMIN_ROLES },
   { href: "/reports", label: "التقارير", icon: "reports", section: "الإدارة", mod: "reports", roles: ADMIN_ROLES },
   { href: "/developers", label: "المطورون", icon: "developers", section: "الإدارة", mod: "developers", roles: ADMIN_ROLES },

@@ -31,6 +31,17 @@ export function CustomersClient({ customers }: { customers: Customer[] }) {
     } else toast("تعذر الحفظ");
   }
 
+  async function remind(customerId: string) {
+    const res = await fetch("/api/remind", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ customerId }),
+    });
+    const j = await res.json().catch(() => ({}));
+    if (res.ok) toast("أُضيف التذكير لقائمة التنبيهات", "success");
+    else toast(j.error || "تعذر التذكير", "error");
+  }
+
   async function doPay(customerId: string) {
     if (paying) return;
     setPaying(true);
@@ -76,7 +87,10 @@ export function CustomersClient({ customers }: { customers: Customer[] }) {
               <tr key={c.id} className="border-t">
                 <td className="p-2 font-bold">{c.name}<span className="block text-xs text-slate-500 font-normal">{c.phone}</span></td>
                 <td className="p-2 text-center">{lyd(c.creditLimit)}</td>
-                <td className="p-2 text-center">{c.balance > 0 ? <Badge tone="red">{lyd(c.balance)}</Badge> : <span className="text-slate-400 text-xs">لا ديون</span>}</td>
+                <td className="p-2 text-center">
+                  {c.balance > 0 ? <Badge tone="red">{lyd(c.balance)}</Badge> : <span className="text-slate-400 text-xs">لا ديون</span>}
+                  {c.creditLimit > 0 && c.balance > c.creditLimit && <span className="block mt-0.5"><Badge tone="red">تجاوز السقف!</Badge></span>}
+                </td>
                 <td className="p-2">
                   <button className={btnXsCls} onClick={() => setPayFor(payFor === c.id ? null : c.id)}>سداد</button>
                   {payFor === c.id && (
@@ -95,6 +109,9 @@ export function CustomersClient({ customers }: { customers: Customer[] }) {
                           <option value="TRANSFER">تحويل</option>
                         </select>
                         <button className={btnCls} disabled={paying} onClick={() => doPay(c.id)}>{paying ? "جاري..." : "تأكيد"}</button>
+                        {c.balance > 0 && (
+                          <button className={btnGhostCls} onClick={() => remind(c.id)}>تذكير</button>
+                        )}
                       </div>
                     </div>
                   )}

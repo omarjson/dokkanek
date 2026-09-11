@@ -17,7 +17,7 @@ const QUICK = [
 export default async function Home() {
   const start = new Date();
   start.setHours(0, 0, 0, 0);
-  const [productsCount, customersCount, todayAgg, lowStock, recent, pending, tickets, tasks, openShift, todayItems] =
+  const [productsCount, customersCount, todayAgg, lowStock, recent, pending, tickets, tasks, openShift, todayItems, debtors] =
     await Promise.all([
       prisma.product.count({ where: { active: true } }),
       prisma.customer.count(),
@@ -42,6 +42,11 @@ export default async function Home() {
       prisma.saleItem.findMany({
         where: { sale: { date: { gte: start }, status: { in: ["COMPLETED", "COURIER"] } } },
         include: { product: { select: { costPrice: true } } },
+      }),
+      prisma.customer.findMany({
+        where: { balance: { gt: 0 } },
+        orderBy: { balance: "desc" },
+        take: 5,
       }),
     ]);
 
@@ -164,6 +169,24 @@ export default async function Home() {
                     <td className="p-2 font-bold">{p.name}</td>
                     <td className="p-2"><Badge tone="red">المتبقي {p.quantity}</Badge></td>
                     <td className="p-2 text-slate-400 text-xs">الحد {p.minQuantity}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </TableWrap>
+          )}
+          <div className="flex items-center justify-between mb-2 mt-4">
+            <h2 className="font-extrabold text-[15px]">أكبر المدينين</h2>
+            <Link href="/customers" className="text-xs font-bold text-[var(--brand)] hover:underline">الديون والسداد</Link>
+          </div>
+          {debtors.length === 0 ? (
+            <Card><p className="text-sm text-slate-400 text-center py-4">لا ديون مستحقة</p></Card>
+          ) : (
+            <TableWrap>
+              <tbody>
+                {debtors.map((c) => (
+                  <tr key={c.id} className="border-t border-slate-100 first:border-0 hover:bg-slate-50/70 transition">
+                    <td className="p-2 font-bold">{c.name}</td>
+                    <td className="p-2"><Badge tone="red">{lyd(c.balance)}</Badge></td>
                   </tr>
                 ))}
               </tbody>
