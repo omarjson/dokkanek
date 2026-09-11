@@ -45,7 +45,7 @@ export function SettingsForm({ initial }: { initial: Record<string, string> }) {
               {f.type === "checkbox" ? (
                 <input
                   type="checkbox"
-                  className="w-5 h-5"
+                  className="w-6 h-6 accent-[var(--brand)]"
                   checked={form[f.key] === "1"}
                   onChange={(e) => setForm({ ...form, [f.key]: e.target.checked ? "1" : "" })}
                 />
@@ -61,7 +61,7 @@ export function SettingsForm({ initial }: { initial: Record<string, string> }) {
           ))}
         </div>
         <button className={btnCls}>حفظ الإعدادات</button>
-        {saved && <span className="text-green-600 text-sm mr-3">تم الحفظ بنجاح</span>}
+        {saved && <span className="text-green-600 text-sm ms-3">تم الحفظ بنجاح</span>}
       </Card>
     </form>
   );

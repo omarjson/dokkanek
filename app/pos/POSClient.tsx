@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, PageTitle, inputCls, btnCls, btnGhostCls, chipCls, chipActiveCls, Badge } from "@/components/ui";
 import { toast } from "@/components/toast";
-import { IconStar, IconSearch } from "@/components/icons";
+import { IconStar, IconSearch, IconBell, IconX, IconCheck } from "@/components/icons";
 import { lyd, PAY_METHODS } from "@/lib/format";
 
 type P = { id: string; name: string; salePrice: number; quantity: number; sku: string; barcode: string; isFavorite: boolean; categoryId: string | null; categoryName: string | null };
@@ -118,7 +118,7 @@ export function POSClient({ products, customers, categories }: { products: P[]; 
       {outbox.length > 0 && (
         <Card>
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="font-bold text-amber-700">⚠ {outbox.length} فاتورة محفوظة بدون نت — بانتظار المزامنة</p>
+            <p className="font-bold text-amber-700 flex items-center gap-2"><Badge tone="amber">بلا نت</Badge> {outbox.length} فاتورة محفوظة — بانتظار المزامنة</p>
             <button className={btnCls} onClick={syncOutbox}>مزامنة الآن</button>
           </div>
         </Card>
@@ -136,8 +136,8 @@ export function POSClient({ products, customers, categories }: { products: P[]; 
         <div className="lg:col-span-3">
         <Card>
           <div className="relative mb-2">
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"><IconSearch /></span>
-            <input className={inputCls + " !pe-10"} placeholder="بحث: اسم / SKU / باركود" value={q} onChange={(e) => setQ(e.target.value)} />
+            <span className="absolute start-3 top-1/2 -translate-y-1/2 text-slate-400"><IconSearch /></span>
+            <input className={inputCls + " !ps-10"} placeholder="بحث: اسم / SKU / باركود" value={q} onChange={(e) => setQ(e.target.value)} />
           </div>
           {categories.length > 0 && (
             <div className="flex gap-1.5 overflow-x-auto pb-2 mb-1">
@@ -155,7 +155,7 @@ export function POSClient({ products, customers, categories }: { products: P[]; 
                 key={p.id}
                 onClick={() => add(p)}
                 disabled={p.quantity < 1}
-                className="text-right rounded-2xl border border-slate-200 bg-slate-50/60 hover:border-[var(--brand)] hover:bg-white hover:shadow-md active:scale-[0.98] transition p-3 flex justify-between gap-2 disabled:opacity-50"
+                className="text-start rounded-2xl border border-slate-200 bg-slate-50/60 hover:border-[var(--brand)] hover:bg-white hover:shadow-md active:scale-[0.98] transition p-3 flex justify-between gap-2 disabled:opacity-50"
               >
                 <span className="min-w-0">
                   <span className="font-bold text-sm flex items-center gap-1">
@@ -164,7 +164,7 @@ export function POSClient({ products, customers, categories }: { products: P[]; 
                   </span>
                   <span className="text-xs text-slate-400 block mt-0.5">{p.sku} • متاح {p.quantity}</span>
                 </span>
-                <span className="text-left shrink-0">
+                <span className="text-end shrink-0">
                   <b className="block">{lyd(p.salePrice)}</b>
                   {p.quantity <= 0 ? <Badge tone="red">نافد</Badge> : p.quantity <= 5 ? <Badge tone="amber">أخير</Badge> : null}
                 </span>
@@ -177,17 +177,17 @@ export function POSClient({ products, customers, categories }: { products: P[]; 
         <div className="lg:col-span-2 lg:sticky lg:top-4">
         <Card>
           <h2 className="font-bold mb-2">السلة ({cart.length})</h2>
-          {cart.length === 0 && <p className="text-gray-400 text-sm">السلة فارغة — اضغط على صنف لإضافته</p>}
+          {cart.length === 0 && <p className="text-slate-400 text-sm">السلة فارغة — اضغط على صنف لإضافته</p>}
           {cart.map((x) => (
-            <div key={x.id} className="flex items-center gap-2 border-t py-2 text-sm">
-              <span className="flex-1">{x.name}</span>
+            <div key={x.id} className="flex items-center gap-2 border-t border-slate-100 py-2 text-sm">
+              <span className="flex-1 min-w-0 truncate">{x.name}</span>
               <input
                 type="number" min="1" max={x.max} value={x.qty}
                 onChange={(e) => setCart((c) => c.map((y) => (y.id === x.id ? { ...y, qty: Math.max(1, Math.min(x.max, Number(e.target.value || 1))) } : y)))}
                 className="w-16 border rounded px-1 py-1"
               />
               <b>{lyd(x.price * x.qty)}</b>
-              <button className="text-red-500" onClick={() => setCart((c) => c.filter((y) => y.id !== x.id))}>✕</button>
+              <button aria-label="إزالة من السلة" className="text-rose-500 hover:bg-rose-50 rounded-lg p-2 -m-1 min-w-[40px] min-h-[40px] flex items-center justify-center" onClick={() => setCart((c) => c.filter((y) => y.id !== x.id))}><IconX /></button>
             </div>
           ))}
           <div className="grid grid-cols-2 gap-2 mt-3">
@@ -218,9 +218,9 @@ export function POSClient({ products, customers, categories }: { products: P[]; 
             <span className="text-sm text-slate-300">الإجمالي</span>
             <span className="font-extrabold text-xl">{lyd(total)}</span>
           </div>
-          <button className={btnCls + " w-full mt-2 !py-3.5 text-lg"} disabled={loading || cart.length === 0} onClick={checkout}>
-            {loading ? "جاري الحفظ..." : "إتمام البيع ✓"}
-          </button>
+            <button className={btnCls + " w-full mt-2 !py-3.5 text-lg"} disabled={loading || cart.length === 0} onClick={checkout}>
+              {loading ? "جاري الحفظ..." : <span className="inline-flex items-center gap-2">إتمام البيع <IconCheck /></span>}
+            </button>
         </Card>
         </div>
       </div>

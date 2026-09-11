@@ -1,6 +1,6 @@
 import "./globals.css";
 import type { CSSProperties, ReactNode } from "react";
-import { Cairo } from "next/font/google";
+import { IBM_Plex_Sans_Arabic, El_Messiri } from "next/font/google";
 import { prisma } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 import { ADMIN_ROLES } from "@/lib/format";
@@ -8,7 +8,8 @@ import { Sidebar, type NavLink } from "@/components/Sidebar";
 import { Toaster } from "@/components/toast";
 import { ServiceWorker } from "@/components/ServiceWorker";
 
-const cairo = Cairo({ subsets: ["arabic", "latin"], weight: ["400", "600", "700", "800"] });
+const plex = IBM_Plex_Sans_Arabic({ subsets: ["arabic", "latin"], weight: ["400", "500", "600", "700"] });
+const messiri = El_Messiri({ subsets: ["arabic", "latin"], weight: ["500", "600", "700"], variable: "--font-display" });
 
 export const viewport = { themeColor: "#020617" };
 
@@ -50,7 +51,14 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
 
   return (
     <html lang="ar" dir="rtl">
-      <body className={cairo.className} style={{ "--brand": color } as CSSProperties}>
+      <body className={`${plex.className} ${messiri.variable}`} style={{ "--brand": color } as CSSProperties}>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=El+Messiri:wght@500;600;700&display=swap"
+        />
         <ServiceWorker />
         <Toaster />
         {user ? (

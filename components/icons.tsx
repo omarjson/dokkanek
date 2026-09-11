@@ -86,6 +86,12 @@ export const IconLogout = (p: SVGProps<SVGSVGElement>) => (
 export const IconStar = (p: SVGProps<SVGSVGElement>) => (
   <Base {...p}><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3z" /></Base>
 );
+export const IconStarFilled = (p: SVGProps<SVGSVGElement>) => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3z" /></svg>
+);
+export const IconArrowLeft = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}><path d="M19 12H5" /><path d="M11 6l-6 6 6 6" /></Base>
+);
 export const IconPrint = (p: SVGProps<SVGSVGElement>) => (
   <Base {...p}><path d="M7 8V3h10v5" /><rect x="4" y="8" width="16" height="8" rx="2" /><rect x="7" y="13" width="10" height="8" /></Base>
 );
@@ -100,4 +106,7 @@ export const IconCheck = (p: SVGProps<SVGSVGElement>) => (
 );
 export const IconStore = (p: SVGProps<SVGSVGElement>) => (
   <Base {...p}><path d="M4 9l1.5-5h13L20 9" /><path d="M4 9h16v11H4z" /><path d="M9.5 20v-6h5v6" /></Base>
+);
+export const IconTrend = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}><path d="M3 17l6-6 4 4 8-8" /><path d="M15 7h6v6" /></Base>
 );

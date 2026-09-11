@@ -61,7 +61,7 @@ export function Toaster() {
 
   return (
     <>
-      <div className="fixed bottom-4 inset-x-4 sm:inset-x-auto sm:bottom-6 sm:left-6 z-50 flex flex-col gap-2 no-print" aria-live="polite">
+      <div className="fixed bottom-4 inset-x-4 sm:inset-x-auto sm:bottom-6 sm:start-6 z-50 flex flex-col gap-2 no-print" aria-live="polite">
         {items.map((t) => (
           <div
             key={t.id}
@@ -71,7 +71,7 @@ export function Toaster() {
               {t.tone === "error" ? <IconX /> : <IconCheck />}
             </span>
             <span className="flex-1">{t.message}</span>
-            <button onClick={() => setItems((l) => l.filter((x) => x.id !== t.id))} className="opacity-60 hover:opacity-100" aria-label="إغلاق">
+            <button onClick={() => setItems((l) => l.filter((x) => x.id !== t.id))} className="opacity-60 hover:opacity-100 p-2 -m-1 min-w-[40px] min-h-[40px] flex items-center justify-center" aria-label="إغلاق">
               <IconX />
             </button>
           </div>

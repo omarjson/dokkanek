@@ -51,7 +51,7 @@ export function SuppliersClient({ suppliers, products, purchases }: { suppliers:
 
   return (
     <div>
-      <form onSubmit={addSupplier} className="bg-white border rounded-xl p-4 mb-4 flex flex-wrap gap-2 items-end">
+      <form onSubmit={addSupplier} className="bg-white rounded-2xl shadow-[0_1px_3px_rgba(16,24,40,0.08),0_4px_12px_rgba(16,24,40,0.06)] border border-slate-200/70 p-4 sm:p-5 mb-4 flex flex-wrap gap-2 items-end">
         <Field label="اسم المورد *"><input className={inputCls} value={name} onChange={(e) => setName(e.target.value)} required /></Field>
         <Field label="الهاتف"><input className={inputCls} value={phone} onChange={(e) => setPhone(e.target.value)} /></Field>
         <button className={btnCls}>+ مورد</button>
@@ -71,7 +71,7 @@ export function SuppliersClient({ suppliers, products, purchases }: { suppliers:
             <Field label="المدفوع الآن"><input type="number" min="0" className={inputCls} value={paid} onChange={(e) => setPaid(e.target.value)} /></Field>
           </div>
           {rows.map((r, i) => (
-            <div key={i} className="grid grid-cols-4 gap-2 mb-2">
+            <div key={i} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 mb-2">
               <select className={inputCls} value={r.productId} onChange={(e) => setRows(rows.map((x, j) => (j === i ? { ...x, productId: e.target.value } : x)))}>
                 <option value="">اختر الصنف</option>
                 {products.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
@@ -87,28 +87,34 @@ export function SuppliersClient({ suppliers, products, purchases }: { suppliers:
 
       <div className="grid md:grid-cols-2 gap-3">
         <Card>
-          <h2 className="font-bold mb-2">الموردون</h2>
-          <table className="w-full text-sm">
+          <h2 className="font-extrabold text-[15px] mb-2">الموردون</h2>
+          {suppliers.length === 0 ? (
+            <p className="text-center text-slate-400 py-4 text-sm">لا موردين بعد</p>
+          ) : (
+          <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[420px]">
             <tbody>
               {suppliers.map((s) => (
                 <tr key={s.id} className="border-t">
-                  <td className="py-1 font-bold">{s.name}<span className="block text-xs text-gray-500 font-normal">{s.phone}</span></td>
+                  <td className="py-1 font-bold">{s.name}<span className="block text-xs text-slate-500 font-normal">{s.phone}</span></td>
                   <td className="text-center">{s.balance > 0 ? <Badge tone="red">{lyd(s.balance)}</Badge> : "لا ديون"}</td>
                 </tr>
               ))}
             </tbody>
           </table>
+          </div>
+          )}
         </Card>
         <Card>
-          <h2 className="font-bold mb-2">أحدث فواتير الشراء</h2>
+          <h2 className="font-extrabold text-[15px] mb-2">أحدث فواتير الشراء</h2>
           {purchases.map((p) => (
             <div key={p.id} className="border-t py-2 text-sm">
               <div className="flex justify-between"><b>{p.no}</b><span>{lyd(p.total)}</span></div>
-              <div className="text-xs text-gray-500">{p.supplier?.name} • {fmtDate(p.date)} • مدفوع {lyd(p.paid)}</div>
+              <div className="text-xs text-slate-500">{p.supplier?.name} • {fmtDate(p.date)} • مدفوع {lyd(p.paid)}</div>
               <div className="text-xs">{p.items.map((i) => `${i.product.name} × ${i.qty}`).join("، ")}</div>
             </div>
           ))}
-          {purchases.length === 0 && <p className="text-gray-400 text-sm">لا مشتريات بعد</p>}
+          {purchases.length === 0 && <p className="text-slate-400 text-sm">لا مشتريات بعد</p>}
         </Card>
       </div>
     </div>

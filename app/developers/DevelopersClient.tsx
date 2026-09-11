@@ -23,13 +23,13 @@ export function DevelopersClient({ initialKey }: { initialKey: string }) {
         <h2 className="font-bold mb-2">مفتاح الـ API</h2>
         <div className="flex flex-wrap gap-2 items-end">
           <Field label="المفتاح الحالي (انسخه واحفظه)">
-            <input className={inputCls + " font-mono !w-80"} readOnly value={key || "لا يوجد — ولّد واحدا"} dir="ltr" />
+            <input className={inputCls + " font-mono w-full sm:!w-80 max-w-full"} readOnly value={key || "لا يوجد — ولّد واحدا"} dir="ltr" />
           </Field>
           <button className={btnCls} disabled={loading} onClick={regen}>
             {loading ? "جاري التوليد..." : "توليد مفتاح جديد"}
           </button>
         </div>
-        <p className="text-xs text-gray-500 mt-2">يُرسل في كل طلب عبر الترويسة <code dir="ltr">x-api-key</code>. لا تشاركه علنا.</p>
+        <p className="text-xs text-slate-500 mt-2">يُرسل في كل طلب عبر الترويسة <code dir="ltr">x-api-key</code>. لا تشاركه علنا.</p>
       </Card>
       <Card>
         <h2 className="font-bold mb-2">أمثلة</h2>
@@ -44,7 +44,7 @@ curl -X POST -H "Content-Type: application/json" \\
        "payMethod":"CASH","status":"COMPLETED"}'`}
         </pre>
         <p className="text-sm mt-2">
-          الوثيقة الكاملة بصيغة JSON: <a href="/api/v1/docs" className="text-blue-600 hover:underline" dir="ltr">/api/v1/docs</a>
+          الوثيقة الكاملة بصيغة JSON: <a href="/api/v1/docs" className="text-[var(--brand)] hover:underline" dir="ltr">/api/v1/docs</a>
         </p>
       </Card>
     </div>

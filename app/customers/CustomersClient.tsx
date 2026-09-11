@@ -2,7 +2,7 @@
 import { toast } from "@/components/toast";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { inputCls, btnCls, btnGhostCls, Field, Badge } from "@/components/ui";
+import { inputCls, btnCls, btnGhostCls, btnXsCls, Field, Badge, Card, THead } from "@/components/ui";
 import { lyd } from "@/lib/format";
 
 type Sale = { id: string; no: string; total: number; paid: number };
@@ -47,7 +47,7 @@ export function CustomersClient({ customers }: { customers: Customer[] }) {
     <div>
       <button className={btnCls + " mb-3"} onClick={() => setShowAdd(!showAdd)}>+ زبون جديد</button>
       {showAdd && (
-        <form onSubmit={add} className="bg-white border rounded-xl p-4 mb-4 grid md:grid-cols-4 gap-2">
+        <form onSubmit={add} className="bg-white rounded-2xl shadow-[0_1px_3px_rgba(16,24,40,0.08),0_4px_12px_rgba(16,24,40,0.06)] border border-slate-200/70 p-4 sm:p-5 mb-4 grid md:grid-cols-4 gap-2">
           <Field label="الاسم *"><input className={inputCls} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required /></Field>
           <Field label="الهاتف"><input className={inputCls} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></Field>
           <Field label="العنوان"><input className={inputCls} value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} /></Field>
@@ -55,35 +55,36 @@ export function CustomersClient({ customers }: { customers: Customer[] }) {
           <div className="md:col-span-4"><button className={btnCls}>حفظ</button></div>
         </form>
       )}
-      <div className="bg-white rounded-xl shadow-sm border overflow-x-auto">
+      {customers.length === 0 ? (
+        <Card><p className="text-center text-slate-400 py-6 text-sm">لا زبائن بعد — أضف أول زبون من الأعلى</p></Card>
+      ) : (
+      <div className="bg-white rounded-2xl shadow-[0_1px_3px_rgba(16,24,40,0.08),0_4px_12px_rgba(16,24,40,0.06)] border border-slate-200/70 overflow-x-auto">
         <table className="w-full text-sm min-w-[640px]">
-          <thead>
-            <tr className="bg-gray-50 text-gray-600">
-              <th className="p-2 text-right">الزبون</th>
+          <THead>
+              <th className="p-2 text-start">الزبون</th>
               <th className="p-2">السقف</th>
               <th className="p-2">المستحق عليه</th>
               <th className="p-2">إجراءات</th>
-            </tr>
-          </thead>
+          </THead>
           <tbody>
             {customers.map((c) => (
               <tr key={c.id} className="border-t">
-                <td className="p-2 font-bold">{c.name}<span className="block text-xs text-gray-500 font-normal">{c.phone}</span></td>
+                <td className="p-2 font-bold">{c.name}<span className="block text-xs text-slate-500 font-normal">{c.phone}</span></td>
                 <td className="p-2 text-center">{lyd(c.creditLimit)}</td>
-                <td className="p-2 text-center">{c.balance > 0 ? <Badge tone="red">{lyd(c.balance)}</Badge> : <span>0</span>}</td>
+                <td className="p-2 text-center">{c.balance > 0 ? <Badge tone="red">{lyd(c.balance)}</Badge> : <span className="text-slate-400 text-xs">لا ديون</span>}</td>
                 <td className="p-2">
-                  <button className={btnGhostCls + " !px-2 !py-1 text-xs"} onClick={() => setPayFor(payFor === c.id ? null : c.id)}>سداد</button>
+                  <button className={btnXsCls} onClick={() => setPayFor(payFor === c.id ? null : c.id)}>سداد</button>
                   {payFor === c.id && (
-                    <div className="mt-2 border rounded-lg p-2 bg-gray-50 grid gap-2">
+                    <div className="mt-2 border rounded-lg p-2 bg-slate-50 grid gap-2">
                       <select className={inputCls} value={pay.saleId} onChange={(e) => setPay({ ...pay, saleId: e.target.value })}>
                         <option value="">دفعة عامة على الحساب</option>
                         {c.sales.filter((s) => s.total - s.paid > 0.001).map((s) => (
                           <option key={s.id} value={s.id}>{s.no} — متبقي {lyd(s.total - s.paid)}</option>
                         ))}
                       </select>
-                      <div className="flex gap-2">
-                        <input type="number" min="0.01" step="0.01" placeholder="المبلغ" className={inputCls} value={pay.amount} onChange={(e) => setPay({ ...pay, amount: e.target.value })} />
-                        <select className={inputCls} value={pay.method} onChange={(e) => setPay({ ...pay, method: e.target.value })}>
+                      <div className="flex flex-wrap gap-2">
+                        <input type="number" min="0.01" step="0.01" placeholder="المبلغ" className={inputCls + " min-w-0 flex-1"} value={pay.amount} onChange={(e) => setPay({ ...pay, amount: e.target.value })} />
+                        <select className={inputCls + " !w-auto"} value={pay.method} onChange={(e) => setPay({ ...pay, method: e.target.value })}>
                           <option value="CASH">نقدي</option>
                           <option value="CARD">بطاقة</option>
                           <option value="TRANSFER">تحويل</option>
@@ -98,6 +99,7 @@ export function CustomersClient({ customers }: { customers: Customer[] }) {
           </tbody>
         </table>
       </div>
+      )}
     </div>
   );
 }

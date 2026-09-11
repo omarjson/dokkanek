@@ -18,9 +18,14 @@ export function fmtDate(d: Date | string | null | undefined): string {
   if (!d) return "—";
   const x = typeof d === "string" ? new Date(d) : d;
   try {
-    return x.toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" });
+    // عربية ليبية بأرقام لاتينية (المغرب العربي) — ثابت في كل المنظومة
+    return x.toLocaleString("ar-LY-u-nu-latn-ca-gregory", { dateStyle: "medium", timeStyle: "short" });
   } catch {
-    return String(x);
+    try {
+      return x.toLocaleString("ar-u-nu-latn", { dateStyle: "medium", timeStyle: "short" });
+    } catch {
+      return String(x);
+    }
   }
 }
 

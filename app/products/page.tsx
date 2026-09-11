@@ -1,7 +1,8 @@
 export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
-import { PageTitle, Card, Badge, inputCls, btnGhostCls } from "@/components/ui";
+import { PageTitle, Card, Badge, inputCls, btnGhostCls, btnXsCls } from "@/components/ui";
+import { IconStarFilled } from "@/components/icons";
 import { ProductForm } from "./ProductForm";
 import { ProductsTable } from "./ProductsTable";
 
@@ -38,18 +39,18 @@ export default async function ProductsPage({
             <input name="q" defaultValue={q} placeholder="بحث بالاسم / SKU / باركود" className={inputCls} />
             <button className={btnGhostCls}>بحث</button>
           </form>
-          <Link href="/products?fav=1" className={btnGhostCls + " text-sm"}>★ المفضلة</Link>
-          <Link href="/products?low=1" className={btnGhostCls + " text-sm"}>⚠ المنخفضة</Link>
+          <Link href="/products?fav=1" className={btnGhostCls + " text-sm"}><span className="inline-flex items-center gap-1.5"><IconStarFilled width={14} height={14} /> المفضلة</span></Link>
+          <Link href="/products?low=1" className={btnGhostCls + " text-sm"}><span className="inline-flex items-center gap-1.5"><Badge tone="amber">منخفضة</Badge></span></Link>
           <Link href="/products" className={btnGhostCls + " text-sm"}>الكل</Link>
         </div>
       </Card>
       <ProductForm categories={categories} warehouses={warehouses} />
       {shown.length === 0 ? (
-        <Card><p className="text-center text-gray-400 py-6">لا أصناف مطابقة</p></Card>
+        <Card><p className="text-center text-slate-400 py-6">لا أصناف مطابقة</p></Card>
       ) : (
         <ProductsTable products={shown} />
       )}
-      {searchParams.low && <p className="text-xs text-gray-500 mt-2"><Badge tone="red">تنبيه</Badge> الأصناف التي وصلت للحد الأدنى أو تحته.</p>}
+      {searchParams.low && <p className="text-xs text-slate-500 mt-2"><Badge tone="red">تنبيه</Badge> الأصناف التي وصلت للحد الأدنى أو تحته.</p>}
     </div>
   );
 }

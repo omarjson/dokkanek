@@ -1,7 +1,7 @@
 "use client";
 import { toast } from "@/components/toast";
 import { useState } from "react";
-import { inputCls, btnCls, btnGhostCls, Card } from "@/components/ui";
+import { inputCls, btnCls, btnGhostCls, Card, Field, Badge } from "@/components/ui";
 
 // يقبل الترويسات الإنجليزية أو العربية
 const ALIASES: Record<string, string> = {
@@ -81,13 +81,15 @@ export function ImportClient() {
   return (
     <div>
       <Card>
-        <p className="text-sm text-gray-600 mb-2">
+        <p className="text-sm text-slate-600 mb-2">
           من Excel: احفظ الملف بصيغة <b>CSV UTF-8</b> ثم ارفعه هنا. الأعمدة المقبولة (عربي أو إنجليزي):
           الاسم/سعر البيع (إجباري) + الرمز/التكلفة/الكمية/الباركود/حد التنبيه/التصنيف/الرقم القديم.
           الموجود بنفس الرمز يُحدَّث، والجديد يُنشأ.
         </p>
-        <div className="flex flex-wrap gap-2 items-center">
+        <div className="flex flex-wrap gap-2 items-end">
+          <Field label="ملف CSV">
           <input type="file" accept=".csv,.txt" className={inputCls + " !w-auto"} onChange={(e) => onFile(e.target.files?.[0])} />
+          </Field>
           <a href="/api/import" className={btnGhostCls + " text-sm"}>تحميل القالب</a>
           {rows.length > 0 && (
             <button className={btnCls} disabled={loading} onClick={send}>
@@ -98,15 +100,15 @@ export function ImportClient() {
       </Card>
       {rows.length > 0 && (
         <Card>
-          <h2 className="font-bold mb-2">معاينة (أول 10 أسطر من {rows.length})</h2>
+          <h2 className="font-extrabold text-[15px] mb-2">معاينة (أول 10 أسطر من {rows.length})</h2>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm min-w-[560px]">
+            <table className="w-full text-sm min-w-[680px]">
               <thead>
-                <tr className="bg-gray-50 text-gray-600">
-                  <th className="p-1 text-right">الاسم</th>
+                <tr className="bg-slate-50 text-slate-600">
+                  <th className="p-1 text-start">الاسم</th>
                   <th className="p-1">البيع</th>
                   <th className="p-1">الكمية</th>
-                  <th className="p-1 text-right">الرمز</th>
+                  <th className="p-1 text-start">الرمز</th>
                 </tr>
               </thead>
               <tbody>
@@ -126,9 +128,13 @@ export function ImportClient() {
       {result && (
         <Card>
           <p className="font-bold text-green-700">تم: جديد {result.created} • محدّث {result.updated} • أخطاء {result.errors.length}</p>
-          {result.errors.slice(0, 20).map((e, i) => (
-            <p key={i} className="text-sm text-red-600">سطر {e.line}: {e.error}</p>
+          {result.errors.length > 0 && (
+          <div className="max-h-40 overflow-auto mt-2 flex flex-col gap-1">
+          {result.errors.slice(0, 50).map((e, i) => (
+            <p key={i} className="text-sm"><Badge tone="red">سطر {e.line}</Badge> <span className="text-rose-700">{e.error}</span></p>
           ))}
+          </div>
+          )}
         </Card>
       )}
     </div>

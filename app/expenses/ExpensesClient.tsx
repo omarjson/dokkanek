@@ -2,7 +2,7 @@
 import { toast } from "@/components/toast";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { inputCls, btnCls, btnGhostCls, Field, Card } from "@/components/ui";
+import { inputCls, btnCls, btnGhostCls, Field, Card , btnXsCls } from "@/components/ui";
 import { confirmDialog } from "@/components/toast";
 import { lyd, fmtDate } from "@/lib/format";
 
@@ -30,27 +30,29 @@ export function ExpensesClient({ expenses, total }: { expenses: E[]; total: numb
 
   return (
     <div>
-      <form onSubmit={add} className="bg-white border rounded-xl p-4 mb-4 grid md:grid-cols-4 gap-2 items-end">
+      <form onSubmit={add} className="bg-white rounded-2xl shadow-[0_1px_3px_rgba(16,24,40,0.08),0_4px_12px_rgba(16,24,40,0.06)] border border-slate-200/70 p-4 sm:p-5 mb-4 grid md:grid-cols-4 gap-2 items-end">
         <Field label="البيان *"><input className={inputCls} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required /></Field>
         <Field label="المبلغ *"><input type="number" min="0.01" step="0.01" className={inputCls} value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} required /></Field>
         <Field label="ملاحظة"><input className={inputCls} value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })} /></Field>
         <button className={btnCls}>+ مصروف</button>
       </form>
       <Card>
-        <div className="flex justify-between mb-2"><h2 className="font-bold">سجل المصروفات</h2><b>الإجمالي: {lyd(total)}</b></div>
-        <table className="w-full text-sm">
+        <div className="flex justify-between mb-2"><h2 className="font-extrabold text-[15px]">سجل المصروفات</h2><b>الإجمالي: {lyd(total)}</b></div>
+        <div className="overflow-x-auto">
+        <table className="w-full text-sm min-w-[560px]">
           <tbody>
             {expenses.map((x) => (
               <tr key={x.id} className="border-t">
-                <td className="py-1 font-bold">{x.title}<span className="block text-xs text-gray-500 font-normal">{x.note}</span></td>
+                <td className="py-1 font-bold">{x.title}<span className="block text-xs text-slate-500 font-normal">{x.note}</span></td>
                 <td className="text-center font-bold">{lyd(x.amount)}</td>
-                <td className="text-xs text-gray-500">{fmtDate(x.date)}</td>
-                <td><button className={btnGhostCls + " !px-2 !py-1 text-xs !text-red-600"} onClick={() => remove(x.id)}>حذف</button></td>
+                <td className="text-xs text-slate-500">{fmtDate(x.date)}</td>
+                <td><button className={btnXsCls + " !text-rose-600"} onClick={() => remove(x.id)}>حذف</button></td>
               </tr>
             ))}
           </tbody>
         </table>
-        {expenses.length === 0 && <p className="text-center text-gray-400 py-6">لا مصروفات</p>}
+        </div>
+        {expenses.length === 0 && <p className="text-center text-slate-400 py-6">لا مصروفات</p>}
       </Card>
     </div>
   );

@@ -45,7 +45,7 @@ export function Sidebar({
         <span className="flex items-center justify-center w-10 h-10 rounded-2xl bg-[var(--brand)] text-white shrink-0">
           <IconStore />
         </span>
-        <span className="font-extrabold text-lg leading-tight">{storeName}</span>
+        <span className="font-display font-bold text-lg leading-tight">{storeName}</span>
       </Link>
       <nav className="flex-1 overflow-y-auto px-3 pb-4 flex flex-col gap-0.5">
         {visible.map((l) => {
@@ -91,7 +91,7 @@ export function Sidebar({
     <>
       {/* علوي للموبايل */}
       <div className="md:hidden sticky top-0 z-30 flex items-center gap-2 bg-slate-950 text-white px-4 py-3 no-print">
-        <button onClick={() => setOpen(true)} aria-label="القائمة" className="p-1.5 -m-1.5">
+        <button onClick={() => setOpen(true)} aria-label="القائمة" className="p-2.5 -m-1 min-w-[40px] min-h-[40px]">
           <IconMenu />
         </button>
         <span className="font-extrabold">{storeName}</span>
@@ -104,8 +104,8 @@ export function Sidebar({
       {open && (
         <div className="fixed inset-0 z-40 md:hidden no-print">
           <div className="absolute inset-0 bg-slate-950/60" onClick={() => setOpen(false)} />
-          <aside className="absolute top-0 bottom-0 right-0 w-72 max-w-[85vw] bg-slate-950 text-white shadow-2xl">
-            <button onClick={() => setOpen(false)} aria-label="إغلاق" className="absolute top-4 left-4 text-slate-400 p-1">
+          <aside className="absolute top-0 bottom-0 start-0 w-72 max-w-[85vw] bg-slate-950 text-white shadow-2xl">
+            <button onClick={() => setOpen(false)} aria-label="إغلاق" className="absolute top-4 start-4 text-slate-400 p-2.5 min-w-[40px] min-h-[40px]">
               <IconX />
             </button>
             {nav}

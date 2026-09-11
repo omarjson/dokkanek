@@ -22,14 +22,14 @@ export default async function StickerPage({ params }: { params: { id: string } }
   return (
     <div>
       <div className="no-print mb-3"><PrintButton label="طباعة الستيكر" /></div>
-      <div className="bg-white border-2 border-dashed rounded-lg p-4 w-64 text-center">
+      <div className="bg-white border-2 border-dashed rounded-lg p-4 w-64 text-center print:border-black print:w-[50mm]">
         <div className="font-bold text-sm">{settings.store_name || "دكّانك"}</div>
         <div className="text-sm my-1">{p.name}</div>
         <div className="font-bold text-lg my-1">{lyd(p.salePrice)}</div>
         <Bars code={p.barcode || p.sku} />
         <div className="text-xs mt-1 tracking-widest">{p.barcode || p.sku}</div>
       </div>
-      <p className="text-xs text-gray-400 mt-2 no-print">لطباعة شيت كامل كرر الصفحة بعدد الستيكرات من نافذة الطباعة.</p>
+      <p className="text-xs text-slate-400 mt-2 no-print">لطباعة شيت كامل كرر الصفحة بعدد الستيكرات من نافذة الطباعة.</p>
     </div>
   );
 }

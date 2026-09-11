@@ -2,7 +2,7 @@
 import { toast } from "@/components/toast";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { inputCls, btnCls, btnGhostCls, Field, Card } from "@/components/ui";
+import { inputCls, btnCls, btnGhostCls, Field, Card , btnXsCls } from "@/components/ui";
 import { lyd, fmtDate } from "@/lib/format";
 
 type A = { id: string; date: string; checkIn: string | null; checkOut: string | null; minutes: number };
@@ -42,7 +42,7 @@ export function EmployeesClient({ employees }: { employees: E[] }) {
     <div>
       <button className={btnCls + " mb-3"} onClick={() => setOpen(!open)}>+ موظف جديد</button>
       {open && (
-        <form onSubmit={add} className="bg-white border rounded-xl p-4 mb-4 grid md:grid-cols-3 gap-2">
+        <form onSubmit={add} className="bg-white rounded-2xl shadow-[0_1px_3px_rgba(16,24,40,0.08),0_4px_12px_rgba(16,24,40,0.06)] border border-slate-200/70 p-4 sm:p-5 mb-4 grid md:grid-cols-3 gap-2">
           <Field label="الاسم *"><input className={inputCls} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required /></Field>
           <Field label="الهاتف"><input className={inputCls} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></Field>
           <Field label="المسمى"><input className={inputCls} placeholder="كاشير / مندوب / فني" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} /></Field>
@@ -58,25 +58,25 @@ export function EmployeesClient({ employees }: { employees: E[] }) {
           <Card key={e.id}>
             <div className="flex flex-wrap justify-between gap-2 items-center">
               <div>
-                <b>{e.name}</b> <span className="text-sm text-gray-500">• {e.title} • {e.phone}</span>
+                <b>{e.name}</b> <span className="text-sm text-slate-500">• {e.title} • {e.phone}</span>
                 <div className="text-sm">الراتب: {lyd(e.salary)} • العمولة: {e.commissionRate}% • دقائق مسجلة: {monthMin} • المستحق التقريبي: <b>{lyd(accrued)}</b></div>
               </div>
               <div className="flex gap-1">
-                <button className={btnGhostCls + " !px-2 !py-1 text-xs"} onClick={() => att(e.id, "in")}>حضور</button>
-                <button className={btnGhostCls + " !px-2 !py-1 text-xs"} onClick={() => att(e.id, "out")}>انصراف</button>
+                <button className={btnXsCls} onClick={() => att(e.id, "in")}>حضور</button>
+                <button className={btnXsCls} onClick={() => att(e.id, "out")}>انصراف</button>
               </div>
             </div>
             {e.attendances.length > 0 && (
-              <div className="text-xs text-gray-500 mt-2">
+              <div className="text-xs text-slate-500 mt-2">
                 {e.attendances.slice(0, 5).map((a) => (
-                  <span key={a.id} className="ml-3">{fmtDate(a.date)}: {a.minutes} د</span>
+                  <span key={a.id} className="ms-3">{fmtDate(a.date)}: {a.minutes} دقيقة</span>
                 ))}
               </div>
             )}
           </Card>
         );
       })}
-      {employees.length === 0 && <Card><p className="text-center text-gray-400 py-6">لا موظفين</p></Card>}
+      {employees.length === 0 && <Card><p className="text-center text-slate-400 py-6">لا موظفين</p></Card>}
     </div>
   );
 }

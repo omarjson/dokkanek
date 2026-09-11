@@ -33,12 +33,12 @@ export function LoginForm() {
     <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4 relative overflow-hidden">
       <div className="absolute -top-24 -left-24 w-72 h-72 rounded-full bg-[var(--brand)]/30 blur-3xl" aria-hidden />
       <div className="absolute -bottom-24 -right-24 w-72 h-72 rounded-full bg-[var(--brand)]/20 blur-3xl" aria-hidden />
-      <form onSubmit={submit} className="relative bg-white rounded-3xl shadow-2xl p-6 sm:p-8 w-full max-w-sm">
+      <form onSubmit={submit} className="relative bg-white rounded-2xl shadow-2xl p-6 sm:p-8 w-full max-w-sm">
         <div className="flex flex-col items-center mb-5">
           <span className="flex items-center justify-center w-14 h-14 rounded-2xl bg-[var(--brand)] text-white mb-3">
             <IconStore width={28} height={28} />
           </span>
-          <h1 className="text-2xl font-extrabold">دكّانك</h1>
+          <h1 className="font-display font-semibold text-2xl">دكّانك</h1>
           <p className="text-sm text-slate-500 mt-0.5">منظومة المبيعات — تسجيل الدخول</p>
         </div>
         <label className="block mb-3">
@@ -71,7 +71,9 @@ export function LoginForm() {
         <button className={`${btnCls} w-full !py-3 text-base`} disabled={loading}>
           {loading ? "جاري الدخول..." : "دخول"}
         </button>
-        <p className="text-[11px] text-slate-400 mt-4 text-center">تجريبي: admin / admin123 — cashier / 1234</p>
+        {process.env.NODE_ENV !== "production" && (
+          <p className="text-[11px] text-slate-400 mt-4 text-center">تجريبي: admin / admin123 — cashier / 1234</p>
+        )}
       </form>
     </div>
   );

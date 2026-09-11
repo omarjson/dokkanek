@@ -68,8 +68,9 @@ export function ShiftsClient({ open, history, expected }: { open: Shift | null; 
         )}
       </Card>
       <Card>
-        <h2 className="font-bold mb-2">سجل الورديات</h2>
-        <table className="w-full text-sm">
+        <h2 className="font-extrabold text-[15px] mb-2">سجل الورديات</h2>
+        <div className="overflow-x-auto">
+        <table className="w-full text-sm min-w-[480px]">
           <tbody>
             {history.map((s) => (
               <tr key={s.id} className="border-t">
@@ -81,7 +82,8 @@ export function ShiftsClient({ open, history, expected }: { open: Shift | null; 
             ))}
           </tbody>
         </table>
-        {history.length === 0 && <p className="text-center text-gray-400 py-6">لا ورديات بعد</p>}
+        </div>
+        {history.length === 0 && <p className="text-center text-slate-400 py-6">لا ورديات بعد</p>}
       </Card>
     </div>
   );

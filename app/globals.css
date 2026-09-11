@@ -14,6 +14,17 @@ body {
   background: #eef1f6;
   color: #17233b;
   -webkit-font-smoothing: antialiased;
+  line-height: 1.7;
+}
+
+/* خط العرض للعلامة والعناوين — El Messiri مباشرة (يعمل في كل المكونات) */
+.font-display {
+  font-family: "El Messiri", "IBM Plex Sans Arabic", system-ui, sans-serif;
+}
+
+/* أرقام مالية بعرض ثابت حتى لا تهتز الأعمدة */
+.tnum, td:last-child {
+  font-variant-numeric: tabular-nums;
 }
 
 /* جداول أنظف */
@@ -47,5 +58,14 @@ select:focus-visible {
   }
   body {
     background: #fff;
+    color: #000;
   }
+  thead {
+    display: table-header-group;
+  }
+}
+
+@page {
+  size: auto;
+  margin: 10mm;
 }

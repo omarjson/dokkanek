@@ -29,7 +29,7 @@ export function ReturnsClient({ products, returns, damages }: { products: Produc
 
   return (
     <div>
-      <form onSubmit={submit} className="bg-white border rounded-xl p-4 mb-4 grid md:grid-cols-5 gap-2 items-end">
+      <form onSubmit={submit} className="bg-white rounded-2xl shadow-[0_1px_3px_rgba(16,24,40,0.08),0_4px_12px_rgba(16,24,40,0.06)] border border-slate-200/70 p-4 sm:p-5 mb-4 grid md:grid-cols-5 gap-2 items-end">
         <Field label="النوع">
           <select className={inputCls} value={kind} onChange={(e) => setKind(e.target.value as "return" | "damage")}>
             <option value="return">راجع (يرجع للمخزون)</option>
@@ -51,21 +51,21 @@ export function ReturnsClient({ products, returns, damages }: { products: Produc
           <h2 className="font-bold mb-2">سجل الرواجع</h2>
           {returns.map((r) => (
             <div key={r.id} className="border-t py-1 text-sm flex justify-between">
-              <span>{r.product?.name} × {r.qty} <span className="text-gray-500">• {r.reason} {r.sale ? `• ${r.sale.no}` : ""}</span></span>
-              <span className="text-xs text-gray-500">{fmtDate(r.date)}</span>
+              <span>{r.product?.name} × {r.qty} <span className="text-slate-500">• {r.reason} {r.sale ? `• ${r.sale.no}` : ""}</span></span>
+              <span className="text-xs text-slate-500">{fmtDate(r.date)}</span>
             </div>
           ))}
-          {returns.length === 0 && <p className="text-gray-400 text-sm">لا رواجع</p>}
+          {returns.length === 0 && <p className="text-slate-400 text-sm">لا رواجع</p>}
         </Card>
         <Card>
           <h2 className="font-bold mb-2">سجل التالف والمستبعد</h2>
           {damages.map((r) => (
             <div key={r.id} className="border-t py-1 text-sm flex justify-between">
-              <span>{r.product?.name} × {r.qty} <span className="text-gray-500">• {r.reason}</span></span>
-              <span className="text-xs text-gray-500">{fmtDate(r.date)}</span>
+              <span>{r.product?.name} × {r.qty} <span className="text-slate-500">• {r.reason}</span></span>
+              <span className="text-xs text-slate-500">{fmtDate(r.date)}</span>
             </div>
           ))}
-          {damages.length === 0 && <p className="text-gray-400 text-sm">لا تالف — {lyd(0)}</p>}
+          {damages.length === 0 && <p className="text-slate-400 text-sm">لا تالف مسجل</p>}
         </Card>
       </div>
     </div>

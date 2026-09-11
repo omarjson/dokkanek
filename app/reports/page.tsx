@@ -5,7 +5,8 @@ import { prisma } from "@/lib/db";
 import { requireRoles } from "@/lib/auth";
 import { ADMIN_ROLES } from "@/lib/format";
 import { lyd } from "@/lib/format";
-import { PageTitle, Card, Badge, btnGhostCls } from "@/components/ui";
+import { PageTitle, Stat, Card, Badge, btnGhostCls, btnXsCls } from "@/components/ui";
+import { IconChart, IconReceipt, IconBox, IconTrend, IconWallet } from "@/components/icons";
 
 const RANGES = [
   { key: "today", label: "اليوم", days: 1 },
@@ -69,12 +70,12 @@ export default async function ReportsPage({ searchParams }: { searchParams: { ra
           </Link>
         ))}
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
-        <Card><div className="text-sm text-gray-500">الإيراد</div><div className="text-xl font-extrabold">{lyd(revenue)}</div></Card>
-        <Card><div className="text-sm text-gray-500">الخصومات</div><div className="text-xl font-extrabold">{lyd(discounts)}</div></Card>
-        <Card><div className="text-sm text-gray-500">تكلفة البضاعة</div><div className="text-xl font-extrabold">{lyd(cogs)}</div></Card>
-        <Card><div className="text-sm text-gray-500">الربح + الهامش</div><div className="text-xl font-extrabold text-green-700">{lyd(profit)}</div><div className="text-xs text-gray-500">{margin.toFixed(1)}%</div></Card>
-        <Card><div className="text-sm text-gray-500">المصروفات</div><div className="text-xl font-extrabold text-red-600">{lyd(expTotal)}</div><div className="text-xs">الصافي: <b>{lyd(net)}</b></div></Card>
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-4">
+        <Stat label="الإيراد" value={lyd(revenue)} icon={IconChart} accent="bg-sky-500/10 text-sky-600" />
+        <Stat label="الخصومات" value={lyd(discounts)} icon={IconReceipt} accent="bg-slate-500/10 text-slate-500" />
+        <Stat label="تكلفة البضاعة" value={lyd(cogs)} icon={IconBox} accent="bg-amber-500/10 text-amber-600" />
+        <Stat label="الربح" value={lyd(profit)} sub={`الهامش ${margin.toFixed(1)}%`} icon={IconTrend} accent="bg-emerald-500/10 text-emerald-600" />
+        <Stat label="المصروفات" value={lyd(expTotal)} sub={<span>الصافي: <b>{lyd(net)}</b></span>} icon={IconWallet} accent="bg-rose-500/10 text-rose-600" />
       </div>
       <div className="grid md:grid-cols-2 gap-3">
         <Card>
@@ -85,10 +86,10 @@ export default async function ReportsPage({ searchParams }: { searchParams: { ra
               <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                 <div className="h-full bg-[var(--brand)] rounded-full" style={{ width: `${Math.round((t.revenue / maxRev) * 100)}%` }} />
               </div>
-              <div className="text-xs text-gray-500">الكمية {t.qty} • الربح {lyd(t.profit)}</div>
+              <div className="text-xs text-slate-500">الكمية {t.qty} • الربح {lyd(t.profit)}</div>
             </div>
           ))}
-          {top.length === 0 && <p className="text-gray-400 text-sm">لا مبيعات في الفترة</p>}
+          {top.length === 0 && <p className="text-slate-400 text-sm">لا مبيعات في الفترة</p>}
         </Card>
         <Card>
           <h2 className="font-bold mb-2">حسب التصنيف</h2>
@@ -103,7 +104,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: { ra
               ))}
             </tbody>
           </table>
-          {cats.length === 0 && <p className="text-gray-400 text-sm">لا بيانات</p>}
+          {cats.length === 0 && <p className="text-slate-400 text-sm">لا بيانات</p>}
         </Card>
       </div>
     </div>

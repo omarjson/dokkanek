@@ -41,7 +41,7 @@ export function ProductForm({ categories, warehouses }: { categories: { id: stri
   if (!open) return <button onClick={() => setOpen(true)} className={btnCls}>+ صنف جديد</button>;
 
   return (
-    <form onSubmit={submit} className="bg-white border rounded-xl p-4 mb-4 grid md:grid-cols-3 gap-2">
+    <form onSubmit={submit} className="bg-white rounded-2xl shadow-[0_1px_3px_rgba(16,24,40,0.08),0_4px_12px_rgba(16,24,40,0.06)] border border-slate-200/70 p-4 sm:p-5 mb-4 grid md:grid-cols-3 gap-2">
       <Field label="اسم الصنف *"><input className={inputCls} value={form.name} onChange={(e) => set("name", e.target.value)} required /></Field>
       <Field label="رمز SKU (اختياري — يتولد تلقائيا)"><input className={inputCls} value={form.sku} onChange={(e) => set("sku", e.target.value)} /></Field>
       <Field label="باركود"><input className={inputCls} value={form.barcode} onChange={(e) => set("barcode", e.target.value)} /></Field>

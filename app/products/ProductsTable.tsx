@@ -1,8 +1,9 @@
 "use client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Badge, btnGhostCls } from "@/components/ui";
+import { Badge, btnGhostCls, btnXsCls } from "@/components/ui";
 import { confirmDialog, toast } from "@/components/toast";
+import { IconStar, IconStarFilled } from "@/components/icons";
 import { lyd } from "@/lib/format";
 
 type P = {
@@ -38,8 +39,8 @@ export function ProductsTable({ products }: { products: P[] }) {
       <table className="w-full text-sm min-w-[760px]">
         <thead>
           <tr className="bg-slate-50 text-slate-500 text-[13px]">
-            <th className="p-2 text-right">الصنف</th>
-            <th className="p-2 text-right">SKU / باركود</th>
+            <th className="p-2 text-start">الصنف</th>
+            <th className="p-2 text-start">SKU / باركود</th>
             <th className="p-2">التكلفة</th>
             <th className="p-2">البيع</th>
             <th className="p-2">الكمية</th>
@@ -48,14 +49,14 @@ export function ProductsTable({ products }: { products: P[] }) {
         </thead>
         <tbody>
           {products.map((p) => (
-            <tr key={p.id} className="border-t hover:bg-gray-50">
+            <tr key={p.id} className="border-t hover:bg-slate-50">
               <td className="p-2">
-                <div className="font-bold">
-                  {p.isFavorite && <span className="text-amber-500">★ </span>}{p.name}
+                <div className="font-bold flex items-center gap-1.5">
+                  {p.isFavorite && <span className="text-amber-500"><IconStarFilled width={15} height={15} /></span>}{p.name}
                 </div>
-                <div className="text-xs text-gray-500">{p.category?.name ?? "—"}</div>
+                <div className="text-xs text-slate-500">{p.category?.name ?? "—"}</div>
               </td>
-              <td className="p-2 text-xs text-gray-600">{p.sku}<br />{p.barcode || "—"}</td>
+              <td className="p-2 text-xs text-slate-600">{p.sku}<br />{p.barcode || "—"}</td>
               <td className="p-2 text-center">{lyd(p.costPrice)}</td>
               <td className="p-2 text-center font-bold">{lyd(p.salePrice)}</td>
               <td className="p-2 text-center">
@@ -67,14 +68,16 @@ export function ProductsTable({ products }: { products: P[] }) {
               </td>
               <td className="p-2">
                 <div className="flex flex-wrap gap-1">
-                  <button className={btnGhostCls + " !px-2 !py-1 text-xs"} onClick={() => patch(p.id, { isFavorite: !p.isFavorite })}>
-                    {p.isFavorite ? "إزالة ★" : "مفضلة ☆"}
+                  <button className={btnXsCls} onClick={() => patch(p.id, { isFavorite: !p.isFavorite })}>
+                    <span className="inline-flex items-center gap-1">
+                      {p.isFavorite ? <><IconStarFilled width={13} height={13} /> مفضلة</> : <><IconStar width={13} height={13} /> مفضلة</>}
+                    </span>
                   </button>
-                  <button className={btnGhostCls + " !px-2 !py-1 text-xs"} onClick={() => patch(p.id, { quantity: 0 }, `تصفير كمية "${p.name}"؟`)}>
+                  <button className={btnXsCls} onClick={() => patch(p.id, { quantity: 0 }, `تصفير كمية "${p.name}"؟`)}>
                     تصفير
                   </button>
-                  <Link href={`/sticker/${p.id}`} className={btnGhostCls + " !px-2 !py-1 text-xs"}>ستيكر</Link>
-                  <button className={btnGhostCls + " !px-2 !py-1 text-xs !text-red-600"} onClick={() => remove(p.id, p.name)}>حذف</button>
+                  <Link href={`/sticker/${p.id}`} className={btnXsCls}>ستيكر</Link>
+                  <button className={btnXsCls + " !text-rose-600"} onClick={() => remove(p.id, p.name)}>حذف</button>
                 </div>
               </td>
             </tr>

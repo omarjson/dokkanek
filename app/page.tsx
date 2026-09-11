@@ -80,8 +80,8 @@ export default async function Home() {
           </h2>
           <TableWrap>
             <THead>
-              <th className="p-2.5 text-right font-bold">الرقم</th>
-              <th className="p-2.5 text-right font-bold">الزبون</th>
+              <th className="p-2.5 text-start font-bold">الرقم</th>
+              <th className="p-2.5 text-start font-bold">الزبون</th>
               <th className="p-2.5 font-bold">الحالة</th>
               <th className="p-2.5 font-bold">الإجمالي</th>
             </THead>
@@ -107,7 +107,7 @@ export default async function Home() {
         <div>
           <h2 className="font-extrabold mb-2">كميات منخفضة</h2>
           {low.length === 0 ? (
-            <Card><p className="text-sm text-slate-400 text-center py-4">المخزون بخير — لا تنبيهات 🎉</p></Card>
+            <Card><p className="text-sm text-slate-400 text-center py-4">المخزون بخير — لا تنبيهات</p></Card>
           ) : (
             <TableWrap>
               <tbody>
