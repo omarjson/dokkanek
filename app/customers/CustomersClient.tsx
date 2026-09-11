@@ -1,5 +1,6 @@
 "use client";
 import { toast } from "@/components/toast";
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { inputCls, btnCls, btnGhostCls, btnXsCls, Field, Badge, Card, THead, Empty } from "@/components/ui";
@@ -85,7 +86,7 @@ export function CustomersClient({ customers }: { customers: Customer[] }) {
           <tbody>
             {customers.map((c) => (
               <tr key={c.id} className="border-t">
-                <td className="p-2 font-bold">{c.name}<span className="block text-xs text-slate-500 font-normal">{c.phone}</span></td>
+                <td className="p-2 font-bold"><Link href={`/customers/${c.id}`} className="hover:text-[var(--brand)] hover:underline">{c.name}</Link><span className="block text-xs text-slate-500 font-normal">{c.phone}</span></td>
                 <td className="p-2 text-center">{lyd(c.creditLimit)}</td>
                 <td className="p-2 text-center">
                   {c.balance > 0 ? <Badge tone="red">{lyd(c.balance)}</Badge> : <span className="text-slate-400 text-xs">لا ديون</span>}

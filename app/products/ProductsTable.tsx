@@ -106,7 +106,7 @@ export function ProductsTable({ products }: { products: P[] }) {
             <tr key={p.id} className="border-t hover:bg-slate-50">
               <td className="p-2">
                 <div className="font-bold flex items-center gap-1.5">
-                  {p.isFavorite && <span className="text-amber-500"><IconStarFilled width={15} height={15} /></span>}{p.name}
+                  {p.isFavorite && <span className="text-amber-500"><IconStarFilled width={15} height={15} /></span>}<Link href={`/products/${p.id}`} className="hover:text-[var(--brand)] hover:underline">{p.name}</Link>
                 </div>
                 <div className="text-xs text-slate-500">{p.category?.name ?? "—"}</div>
               </td>

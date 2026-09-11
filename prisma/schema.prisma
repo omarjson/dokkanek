@@ -88,6 +88,7 @@ model Supplier {
   address   String     @default("")
   balance   Float      @default(0)
   purchases Purchase[]
+  payments  Payment[]
 }
 
 model Purchase {
@@ -151,6 +152,8 @@ model Payment {
   sale       Sale?     @relation(fields: [saleId], references: [id])
   customerId String?
   customer   Customer? @relation(fields: [customerId], references: [id])
+  supplierId String?
+  supplier   Supplier? @relation(fields: [supplierId], references: [id])
   amount     Float
   method     String    @default("CASH")
   date       DateTime  @default(now())

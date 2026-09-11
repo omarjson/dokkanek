@@ -2,7 +2,7 @@
 import { toast } from "@/components/toast";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { inputCls, btnCls, btnGhostCls, Field, Card, Badge, SectionTitle } from "@/components/ui";
+import { inputCls, btnCls, btnGhostCls, btnXsCls, Field, Card, Badge, SectionTitle } from "@/components/ui";
 import { IconTruck, IconReceipt } from "@/components/icons";
 import { lyd, fmtDate } from "@/lib/format";
 
@@ -22,6 +22,27 @@ export function SuppliersClient({ suppliers, products, purchases }: { suppliers:
   const [supplierId, setSupplierId] = useState("");
   const [paid, setPaid] = useState("0");
   const [rows, setRows] = useState<{ productId: string; qty: string; price: string }[]>([{ productId: "", qty: "1", price: "" }]);
+  const [payFor, setPayFor] = useState<string | null>(null);
+  const [payAmt, setPayAmt] = useState("");
+  const [paying, setPaying] = useState(false);
+
+  async function paySupplier(id: string) {
+    if (paying) return;
+    setPaying(true);
+    const res = await fetch("/api/supplier-payments", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ supplierId: id, amount: Number(payAmt), method: "CASH" }),
+    });
+    const j = await res.json().catch(() => ({}));
+    setPaying(false);
+    if (res.ok) {
+      setPayFor(null);
+      setPayAmt("");
+      toast("تم سداد المورد", "success");
+      router.refresh();
+    } else toast(j.error || "تعذر السداد", "error");
+  }
 
   async function addSupplier(e: React.FormEvent) {
     e.preventDefault();
@@ -100,6 +121,19 @@ export function SuppliersClient({ suppliers, products, purchases }: { suppliers:
                 <tr key={s.id} className="border-t">
                   <td className="py-1 font-bold">{s.name}<span className="block text-xs text-slate-500 font-normal">{s.phone}</span></td>
                   <td className="text-center">{s.balance > 0 ? <Badge tone="red">{lyd(s.balance)}</Badge> : "لا ديون"}</td>
+                  <td className="p-1">
+                    {s.balance > 0 && (
+                      <>
+                        <button className={btnXsCls} onClick={() => setPayFor(payFor === s.id ? null : s.id)}>سداد</button>
+                        {payFor === s.id && (
+                          <div className="flex gap-1 mt-1">
+                            <input type="number" min="0.01" step="0.01" placeholder="المبلغ" className={inputCls + " !py-1.5 text-sm min-w-0 flex-1"} value={payAmt} onChange={(e) => setPayAmt(e.target.value)} />
+                            <button className={btnXsCls} disabled={paying} onClick={() => paySupplier(s.id)}>{paying ? "جاري..." : "تأكيد"}</button>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
