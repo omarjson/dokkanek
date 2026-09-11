@@ -1,0 +1,14 @@
+services:
+  dokkanek:
+    build: .
+    container_name: dokkanek
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: "file:/data/dokkanek.db"
+    volumes:
+      - dokkanek-data:/data
+
+volumes:
+  dokkanek-data:

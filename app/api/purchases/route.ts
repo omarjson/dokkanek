@@ -24,7 +24,16 @@ export async function POST(req: Request) {
     await prisma.purchaseItem.create({
       data: { purchaseId: pur.id, productId: it.productId, qty: Number(it.qty), price: Number(it.price) },
     });
-    await prisma.product.update({ where: { id: it.productId }, data: { quantity: { increment: Number(it.qty) } } });
+    // متوسط التكلفة المرجح: (الكمية القديمة×التكلفة القديمة + الكمية×السعر) / الإجمالي
+    const old = await prisma.product.findUnique({ where: { id: it.productId } });
+    const q = Number(it.qty);
+    const pr = Number(it.price);
+    const newQty = (old?.quantity || 0) + q;
+    const newCost = pr > 0 && newQty > 0 ? ((old?.quantity || 0) * (old?.costPrice || 0) + q * pr) / newQty : old?.costPrice || 0;
+    await prisma.product.update({
+      where: { id: it.productId },
+      data: { quantity: { increment: q }, costPrice: Math.round(newCost * 100) / 100 },
+    });
     await prisma.stockMove.create({
       data: { productId: it.productId, qty: Number(it.qty), type: "IN", note: `شراء ${no}`, userId: me?.id },
     });

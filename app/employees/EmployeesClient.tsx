@@ -12,14 +12,18 @@ export function EmployeesClient({ employees }: { employees: E[] }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", title: "", salary: "", commissionRate: "" });
+  const [busy, setBusy] = useState(false);
 
   async function add(e: React.FormEvent) {
     e.preventDefault();
+    if (busy) return;
+    setBusy(true);
     const res = await fetch("/api/employees", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...form, salary: Number(form.salary || 0), commissionRate: Number(form.commissionRate || 0) }),
     });
+    setBusy(false);
     if (res.ok) {
       setForm({ name: "", phone: "", title: "", salary: "", commissionRate: "" });
       setOpen(false);
@@ -28,12 +32,15 @@ export function EmployeesClient({ employees }: { employees: E[] }) {
   }
 
   async function att(id: string, action: string) {
+    if (busy) return;
+    setBusy(true);
     const res = await fetch(`/api/employees/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action }),
     });
     const j = await res.json().catch(() => ({}));
+    setBusy(false);
     if (res.ok) router.refresh();
     else toast(j.error || "تعذر التسجيل");
   }

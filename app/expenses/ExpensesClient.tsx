@@ -12,14 +12,18 @@ type E = { id: string; title: string; amount: number; date: string; note: string
 export function ExpensesClient({ expenses, total }: { expenses: E[]; total: number }) {
   const router = useRouter();
   const [form, setForm] = useState({ title: "", amount: "", note: "" });
+  const [busy, setBusy] = useState(false);
 
   async function add(e: React.FormEvent) {
     e.preventDefault();
+    if (busy) return;
+    setBusy(true);
     const res = await fetch("/api/expenses", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...form, amount: Number(form.amount || 0) }),
     });
+    setBusy(false);
     if (res.ok) { setForm({ title: "", amount: "", note: "" }); router.refresh(); } else toast("تعذر الحفظ");
   }
 
@@ -35,7 +39,7 @@ export function ExpensesClient({ expenses, total }: { expenses: E[]; total: numb
         <Field label="البيان *"><input className={inputCls} value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required /></Field>
         <Field label="المبلغ *"><input type="number" min="0.01" step="0.01" className={inputCls} value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} required /></Field>
         <Field label="ملاحظة"><input className={inputCls} value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })} /></Field>
-        <button className={btnCls}>+ مصروف</button>
+        <button className={btnCls} disabled={busy}>{busy ? "جاري..." : "+ مصروف"}</button>
       </form>
       <Card>
         <div className="flex justify-between items-center mb-2"><SectionTitle icon={IconWallet} title="سجل المصروفات" /><b>الإجمالي: {lyd(total)}</b></div>

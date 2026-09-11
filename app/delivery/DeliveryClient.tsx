@@ -18,13 +18,17 @@ const TONE: Record<string, "green" | "red" | "amber" | "blue" | "gray"> = {
 export function DeliveryClient({ tasks }: { tasks: T[] }) {
   const router = useRouter();
   const [collect, setCollect] = useState<Record<string, string>>({});
+  const [busy, setBusy] = useState(false);
 
   async function patch(id: string, body: object) {
+    if (busy) return;
+    setBusy(true);
     const res = await fetch(`/api/tasks/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
+    setBusy(false);
     if (res.ok) router.refresh();
     else toast("تعذر التحديث");
   }

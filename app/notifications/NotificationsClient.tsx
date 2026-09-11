@@ -1,5 +1,6 @@
 "use client";
 import { toast } from "@/components/toast";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { btnCls, Card, Badge } from "@/components/ui";
 import { fmtDate } from "@/lib/format";
@@ -16,13 +17,17 @@ const LABEL: Record<string, string> = { SENT: "مرسل", FAILED: "فشل", PEND
 
 export function NotificationsClient({ items, enabled }: { items: N[]; enabled: boolean }) {
   const router = useRouter();
+  const [busy, setBusy] = useState(false);
 
   async function retry() {
+    if (busy) return;
+    setBusy(true);
     const res = await fetch("/api/notify", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "retry" }),
     });
+    setBusy(false);
     if (res.ok) router.refresh();
     else toast("تعذرت إعادة المحاولة");
   }
@@ -34,7 +39,7 @@ export function NotificationsClient({ items, enabled }: { items: N[]; enabled: b
           <p className="text-sm text-amber-700 font-bold">التنبيهات محفوظة في قائمة الانتظار — <a href="/settings" className="underline">فعّل إرسال واتساب من الإعدادات</a> لبدء الإرسال الحقيقي.</p>
         </Card>
       )}
-      <button className={btnCls + " mb-3"} onClick={retry}>إعادة محاولة الكل</button>
+      <button className={btnCls + " mb-3"} disabled={busy} onClick={retry}>{busy ? "جاري..." : "إعادة محاولة الكل"}</button>
       <Card>
         <div className="overflow-x-auto">
         <table className="w-full text-sm min-w-[640px]">

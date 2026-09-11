@@ -38,11 +38,14 @@ export function CustomersClient({ customers }: { customers: Customer[] }) {
 
   async function add(e: React.FormEvent) {
     e.preventDefault();
+    if (paying) return;
+    setPaying(true);
     const res = await fetch("/api/customers", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ...form, creditLimit: Number(form.creditLimit || 0) }),
     });
+    setPaying(false);
     if (res.ok) {
       setForm({ name: "", phone: "", address: "", creditLimit: "" });
       setShowAdd(false);

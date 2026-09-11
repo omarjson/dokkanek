@@ -23,14 +23,18 @@ export function MaintenanceClient({ tickets }: { tickets: T[] }) {
   const [form, setForm] = useState({ customerName: "", customerPhone: "", device: "", issue: "", technician: "", cost: "" });
   const [part, setPart] = useState<Record<string, { name: string; price: string }>>({});
   const [pay, setPay] = useState<Record<string, string>>({});
+  const [busy, setBusy] = useState(false);
 
   async function act(id: string, body: object) {
+    if (busy) return;
+    setBusy(true);
     const res = await fetch(`/api/tickets/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
     const j = await res.json().catch(() => ({}));
+    setBusy(false);
     if (res.ok) router.refresh();
     else toast(j.error || "تعذر التنفيذ");
   }

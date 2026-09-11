@@ -76,12 +76,15 @@ export function SuppliersClient({ suppliers, products, purchases }: { suppliers:
   async function buy() {
     const items = rows.filter((r) => r.productId && Number(r.qty) > 0).map((r) => ({ productId: r.productId, qty: Number(r.qty), price: Number(r.price || 0) }));
     if (!supplierId || items.length === 0) { toast("اختر المورد وصنفا واحدا على الأقل"); return; }
+    if (paying) return;
+    setPaying(true);
     const res = await fetch("/api/purchases", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ supplierId, paid: Number(paid || 0), items }),
     });
     const j = await res.json().catch(() => ({}));
+    setPaying(false);
     if (res.ok) {
       setShowBuy(false);
       setRows([{ productId: "", qty: "1", price: "" }]);
