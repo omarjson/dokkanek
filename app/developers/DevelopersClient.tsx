@@ -47,6 +47,26 @@ curl -X POST -H "Content-Type: application/json" \\
           الوثيقة الكاملة بصيغة JSON: <a href="/api/v1/docs" className="text-[var(--brand)] hover:underline" dir="ltr">/api/v1/docs</a>
         </p>
       </Card>
+      <Card>
+        <h2 className="font-extrabold text-[15px] mb-2">الربط بالذكاء الاصطناعي (MCP)</h2>
+        <p className="text-sm text-slate-600 mb-2">
+          دكّانك سيرفر MCP: أي مساعد ذكي يدعم البروتوكول يقدر يستعلم (الأصناف، النواقص، مبيعات اليوم، الديون، الصيانة) وينشئ فواتير معلقة للمراجعة — بنفس مفتاح API أعلاه عبر <code dir="ltr">POST /api/mcp</code> برسائل JSON-RPC.
+        </p>
+        <pre className="bg-slate-900 text-green-200 text-xs rounded-xl p-3 overflow-x-auto" dir="ltr">
+{`{
+  "mcpServers": {
+    "dokkanek": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote", "https://HOST/api/mcp",
+        "--header", "x-api-key: KEY"]
+    }
+  }
+}`}
+        </pre>
+        <p className="text-sm mt-2">
+          الأدوات: <code dir="ltr">store_info, list_products, low_stock, today_summary, customer_debt, ticket_status, create_sale</code>
+        </p>
+      </Card>
     </div>
   );
 }

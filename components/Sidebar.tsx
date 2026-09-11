@@ -101,7 +101,7 @@ export function Sidebar({
           </span>
           {!mini && <span className="font-display font-semibold text-[17px] leading-tight truncate">{storeName}</span>}
         </Link>
-        <nav className="flex-1 overflow-y-auto px-2.5 pb-3 flex flex-col gap-0.5">
+        <nav className="nice-dark flex-1 overflow-y-auto px-2.5 pb-3 flex flex-col gap-0.5">
           {home.map((l) => linkRow(l, mini))}
           {SECTIONS.map((sec) => {
             const items = visible.filter((l) => l.section === sec);

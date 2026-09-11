@@ -33,14 +33,39 @@ table {
   border-spacing: 0;
 }
 
-/* تمرير أنعم داخل القوائم */
+/* تمرير نحيف غير مزعج: شفاف عادة ويظهر عند التحويم فقط */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+*:hover, *:focus-within {
+  scrollbar-color: #c3ccd9 transparent;
+}
 *::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
 }
 *::-webkit-scrollbar-thumb {
-  background: #c3ccd9;
+  background: transparent;
   border-radius: 8px;
+}
+*:hover::-webkit-scrollbar-thumb,
+*::-webkit-scrollbar-thumb:hover {
+  background: #c3ccd9;
+}
+/* داخل القائمة الداكنة */
+.nice-dark, .nice-dark * {
+  scrollbar-color: transparent transparent;
+}
+.nice-dark:hover, .nice-dark:focus-within {
+  scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+}
+.nice-dark:hover::-webkit-scrollbar-thumb,
+.nice-dark::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.18);
 }
 
 /* تركيز واضح بلوحة المفاتيح */
