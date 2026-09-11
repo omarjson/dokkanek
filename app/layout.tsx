@@ -1,8 +1,12 @@
+import "./globals.css";
 import type { CSSProperties, ReactNode } from "react";
+import { Cairo } from "next/font/google";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { LogoutButton } from "@/components/LogoutButton";
 import { currentUser, ROLES, ADMIN_ROLES } from "@/lib/auth";
+
+const cairo = Cairo({ subsets: ["arabic", "latin"], weight: ["400", "600", "700", "800"] });
 
 async function getSettings(): Promise<Record<string, string>> {
   try {
@@ -39,13 +43,16 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
 
   return (
     <html lang="ar" dir="rtl">
-      <body style={{ "--brand": color } as CSSProperties}>
-        <header className="bg-[var(--brand)] text-white no-print">
+      <body className={cairo.className} style={{ "--brand": color } as CSSProperties}>
+        <header className="bg-gradient-to-l from-[var(--brand)] to-black/40 text-white shadow-lg sticky top-0 z-20 no-print">
           <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
-            <div className="font-bold text-lg">{storeName}</div>
+            <Link href="/" className="font-extrabold text-xl tracking-tight flex items-center gap-2">
+              <span className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white/20 text-lg">🏪</span>
+              {storeName}
+            </Link>
             {user && (
               <div className="text-sm flex items-center gap-3">
-                <span>
+                <span className="hidden sm:inline bg-white/15 rounded-full px-3 py-1">
                   {user.name} ({ROLES[user.role] ?? user.role})
                 </span>
                 <LogoutButton />
@@ -53,10 +60,14 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
             )}
           </div>
           {user && (
-            <nav className="bg-black/20">
-              <div className="max-w-6xl mx-auto px-4 py-2 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+            <nav className="bg-black/25 backdrop-blur">
+              <div className="max-w-6xl mx-auto px-4 py-2 flex flex-wrap gap-1.5 text-sm">
                 {LINKS.filter((l) => !l.roles || (user && l.roles.includes(user.role))).map((l) => (
-                  <Link key={l.href} href={l.href} className="hover:underline">
+                  <Link
+                    key={l.href}
+                    href={l.href}
+                    className="rounded-full px-3 py-1.5 bg-white/10 hover:bg-white/25 transition font-semibold"
+                  >
                     {l.label}
                   </Link>
                 ))}

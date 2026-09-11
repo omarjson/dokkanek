@@ -6,9 +6,39 @@
   --brand: #0d6efd;
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
-  background: #f4f6f9;
-  color: #1a1a1a;
+  background: #eef1f6;
+  color: #17233b;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* جداول أنظف */
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+/* تمرير أنعم داخل القوائم */
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #c3ccd9;
+  border-radius: 8px;
+}
+
+/* تركيز واضح بلوحة المفاتيح */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 1px;
 }
 
 @media print {
