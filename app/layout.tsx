@@ -25,6 +25,7 @@ const LINKS: { href: string; label: string; roles?: string[] }[] = [
   { href: "/maintenance", label: "الصيانة" },
   { href: "/returns", label: "الرواجع والتالف" },
   { href: "/shifts", label: "الورديات" },
+  { href: "/import", label: "استيراد", roles: ADMIN_ROLES },
   { href: "/employees", label: "الموظفون", roles: ADMIN_ROLES },
   { href: "/audit", label: "سجل الأمن", roles: ADMIN_ROLES },
   { href: "/settings", label: "الإعدادات", roles: ADMIN_ROLES },

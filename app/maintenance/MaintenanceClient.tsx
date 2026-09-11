@@ -65,7 +65,8 @@ export function MaintenanceClient({ tickets }: { tickets: T[] }) {
         <Card key={t.id}>
           <div className="flex flex-wrap justify-between gap-2 items-center">
             <div>
-              <b>{t.no}</b> — {t.device} <Badge tone={TONE[t.status] ?? "gray"}>{TICKET_STATUS[t.status] ?? t.status}</Badge>
+              <b>{t.no}</b> — {t.device} <Badge tone={TONE[t.status] ?? "gray"}>{TICKET_STATUS[t.status] ?? t.status}</Badge>{" "}
+              <a href={`/track/${t.no}`} target="_blank" className="text-blue-600 text-xs hover:underline">تتبع / QR</a>
               <div className="text-xs text-gray-500">{t.customerName} • {t.customerPhone} • استلم {fmtDate(t.receivedAt)} • الفني: {t.technician || "—"}</div>
               {t.issue && <div className="text-sm">العطل: {t.issue}</div>}
               {t.parts.length > 0 && <div className="text-xs">القطع: {t.parts.map((p) => `${p.name} (${lyd(p.price)})`).join("، ")}</div>}
