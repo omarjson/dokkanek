@@ -2,7 +2,8 @@
 import { toast } from "@/components/toast";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { inputCls, btnCls, btnGhostCls, btnXsCls, Field, Badge, Card, THead } from "@/components/ui";
+import { inputCls, btnCls, btnGhostCls, btnXsCls, Field, Badge, Card, THead, Empty } from "@/components/ui";
+import { IconUsers } from "@/components/icons";
 import { lyd } from "@/lib/format";
 
 type Sale = { id: string; no: string; total: number; paid: number };
@@ -56,7 +57,7 @@ export function CustomersClient({ customers }: { customers: Customer[] }) {
         </form>
       )}
       {customers.length === 0 ? (
-        <Card><p className="text-center text-slate-400 py-6 text-sm">لا زبائن بعد — أضف أول زبون من الأعلى</p></Card>
+        <Card><Empty text="لا زبائن بعد — أضف أول زبون من الأعلى" icon={IconUsers} /></Card>
       ) : (
       <div className="bg-white rounded-2xl shadow-[0_1px_3px_rgba(16,24,40,0.08),0_4px_12px_rgba(16,24,40,0.06)] border border-slate-200/70 overflow-x-auto">
         <table className="w-full text-sm min-w-[640px]">

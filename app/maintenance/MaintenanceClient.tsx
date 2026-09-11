@@ -2,8 +2,8 @@
 import { toast } from "@/components/toast";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { inputCls, btnCls, btnGhostCls, Field, Card, Badge , btnXsCls } from "@/components/ui";
-import { IconArrowLeft } from "@/components/icons";
+import { inputCls, btnCls, btnGhostCls, Field, Card, Badge, btnXsCls, Empty } from "@/components/ui";
+import { IconArrowLeft, IconWrench } from "@/components/icons";
 import { lyd, fmtDate, TICKET_STATUS } from "@/lib/format";
 
 type Part = { id: string; name: string; price: number };
@@ -95,7 +95,7 @@ export function MaintenanceClient({ tickets }: { tickets: T[] }) {
           </div>
         </Card>
       ))}
-      {tickets.length === 0 && <Card><p className="text-center text-slate-400 py-6">لا تذاكر صيانة</p></Card>}
+      {tickets.length === 0 && <Card><Empty text="لا تذاكر صيانة — استلم أول جهاز من الأعلى" icon={IconWrench} /></Card>}
     </div>
   );
 }

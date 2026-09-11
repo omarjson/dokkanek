@@ -2,7 +2,7 @@
 import { toast } from "@/components/toast";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { inputCls, btnCls, btnGhostCls, Field, Card , btnXsCls } from "@/components/ui";
+import { inputCls, btnCls, btnGhostCls, Field, Card, btnXsCls } from "@/components/ui";
 import { lyd, fmtDate } from "@/lib/format";
 
 type A = { id: string; date: string; checkIn: string | null; checkOut: string | null; minutes: number };

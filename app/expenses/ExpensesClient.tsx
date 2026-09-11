@@ -2,7 +2,8 @@
 import { toast } from "@/components/toast";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { inputCls, btnCls, btnGhostCls, Field, Card , btnXsCls } from "@/components/ui";
+import { inputCls, btnCls, btnGhostCls, Field, Card, btnXsCls, SectionTitle } from "@/components/ui";
+import { IconWallet } from "@/components/icons";
 import { confirmDialog } from "@/components/toast";
 import { lyd, fmtDate } from "@/lib/format";
 
@@ -37,7 +38,7 @@ export function ExpensesClient({ expenses, total }: { expenses: E[]; total: numb
         <button className={btnCls}>+ مصروف</button>
       </form>
       <Card>
-        <div className="flex justify-between mb-2"><h2 className="font-extrabold text-[15px]">سجل المصروفات</h2><b>الإجمالي: {lyd(total)}</b></div>
+        <div className="flex justify-between items-center mb-2"><SectionTitle icon={IconWallet} title="سجل المصروفات" /><b>الإجمالي: {lyd(total)}</b></div>
         <div className="overflow-x-auto">
         <table className="w-full text-sm min-w-[560px]">
           <tbody>

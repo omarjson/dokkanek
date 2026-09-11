@@ -73,7 +73,7 @@ export function Sidebar({
         className={`flex items-center gap-2.5 rounded-lg text-[13px] font-semibold transition relative ${
           mini ? "justify-center px-0 py-2.5" : "px-3 py-2"
         } ${
-          active ? "bg-white/10 text-white" : "text-slate-400 hover:bg-white/5 hover:text-slate-100"
+          active ? "bg-white/10 text-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.08)]" : "text-slate-400 hover:bg-white/5 hover:text-slate-100"
         }`}
       >
         {active && !mini && (
@@ -96,7 +96,7 @@ export function Sidebar({
           onClick={() => setOpen(false)}
           className={`flex items-center gap-2.5 px-4 pt-4 pb-3 ${mini ? "justify-center px-0" : ""}`}
         >
-          <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[var(--brand)] text-white shrink-0 font-display font-bold text-lg">
+          <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-gradient-to-br from-[var(--brand)] to-slate-900 text-white shrink-0 font-display font-bold text-lg">
             {storeName.trim().charAt(0) || "د"}
           </span>
           {!mini && <span className="font-display font-semibold text-[17px] leading-tight truncate">{storeName}</span>}

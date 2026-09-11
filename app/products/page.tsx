@@ -1,8 +1,8 @@
 export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
-import { PageTitle, Card, Badge, inputCls, btnGhostCls, btnXsCls } from "@/components/ui";
-import { IconStarFilled } from "@/components/icons";
+import { PageTitle, Card, Badge, Empty, inputCls, btnGhostCls, btnXsCls } from "@/components/ui";
+import { IconStarFilled, IconBox } from "@/components/icons";
 import { ProductForm } from "./ProductForm";
 import { ProductsTable } from "./ProductsTable";
 
@@ -46,7 +46,7 @@ export default async function ProductsPage({
       </Card>
       <ProductForm categories={categories} warehouses={warehouses} />
       {shown.length === 0 ? (
-        <Card><p className="text-center text-slate-400 py-6">لا أصناف مطابقة</p></Card>
+        <Card><Empty text="لا أصناف مطابقة — جرّب بحثا آخر أو أضف صنفا جديدا" icon={IconBox} /></Card>
       ) : (
         <ProductsTable products={shown} />
       )}

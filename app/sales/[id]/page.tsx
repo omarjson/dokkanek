@@ -15,7 +15,10 @@ export default async function InvoicePage({ params }: { params: { id: string } }
   return (
     <div className="max-w-xl mx-auto bg-white border border-slate-200 rounded-2xl p-6 print:border-0 print:rounded-none print:max-w-none print:p-0 print:shadow-none">
       <div className="text-center mb-4">
-        <h1 className="text-2xl font-bold">{settings.store_name || "دكّانك"}</h1>
+        <div className="flex items-center justify-center gap-2 mb-1">
+          <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-[var(--brand)] text-white font-display font-bold">د</span>
+          <h1 className="font-display font-semibold text-2xl">{settings.store_name || "دكّانك"}</h1>
+        </div>
         <p className="text-xs text-slate-500">{settings.address || ""} • {settings.phone || ""}</p>
         <p className="text-sm mt-2">فاتورة مبيعات: <b>{sale.no}</b></p>
         <p className="text-xs text-slate-500">{SALE_STATUS[sale.status] ?? sale.status} • {PAY_METHODS[sale.payMethod] ?? sale.payMethod} • {fmtDate(sale.date)}</p>

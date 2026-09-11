@@ -6,11 +6,11 @@ import { PageTitle, Card, Badge, Stat, TableWrap, THead, btnGhostCls } from "@/c
 import { IconCart, IconBox, IconUsers, IconBell, IconPlus, IconWrench, IconClock, IconReceipt } from "@/components/icons";
 
 const QUICK = [
-  { href: "/pos", label: "بيع جديد", icon: IconCart },
-  { href: "/products", label: "صنف جديد", icon: IconPlus },
-  { href: "/maintenance", label: "استلام صيانة", icon: IconWrench },
-  { href: "/shifts", label: "الوردية", icon: IconClock },
-  { href: "/sales", label: "الفواتير", icon: IconReceipt },
+  { href: "/pos", label: "بيع جديد", icon: IconCart, tint: "bg-emerald-500/10 text-emerald-600" },
+  { href: "/products", label: "صنف جديد", icon: IconPlus, tint: "bg-sky-500/10 text-sky-600" },
+  { href: "/maintenance", label: "استلام صيانة", icon: IconWrench, tint: "bg-amber-500/10 text-amber-600" },
+  { href: "/shifts", label: "الوردية", icon: IconClock, tint: "bg-violet-500/10 text-violet-600" },
+  { href: "/sales", label: "الفواتير", icon: IconReceipt, tint: "bg-slate-500/10 text-slate-500" },
 ];
 
 export default async function Home() {
@@ -52,21 +52,30 @@ export default async function Home() {
     <div>
       <PageTitle title="لوحة التحكم" sub="نظرة سريعة على حركة المحل" />
 
-      <div className="flex gap-1.5 overflow-x-auto pb-1 mb-4 -mt-2">
+      <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mb-4 -mt-2">
         {QUICK.map((q) => {
           const Ico = q.icon;
           return (
-            <Link key={q.href} href={q.href} className={btnGhostCls + " !py-2 text-sm whitespace-nowrap"}>
-              <span className="inline-flex items-center gap-1.5"><Ico width={16} height={16} /> {q.label}</span>
+            <Link
+              key={q.href}
+              href={q.href}
+              className="bg-white rounded-2xl border border-slate-200/70 shadow-[0_1px_3px_rgba(16,24,40,0.06)] p-3 flex flex-col items-center gap-1.5 text-[13px] font-bold transition hover:border-[var(--brand)] hover:shadow-md active:scale-[0.98]"
+            >
+              <span className={`flex items-center justify-center w-9 h-9 rounded-xl ${q.tint}`}>
+                <Ico width={19} height={19} />
+              </span>
+              {q.label}
             </Link>
           );
         })}
-        {alerts > 0 && (
+      </div>
+      {alerts > 0 && (
+        <div className="mb-4 -mt-2">
           <span className="inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-bold bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200 whitespace-nowrap">
             <IconBell width={16} height={16} /> {alerts} تحتاج انتباها (انتظار {pending} • صيانة {tickets} • توصيل {tasks})
           </span>
-        )}
-      </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
         <Stat

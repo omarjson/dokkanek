@@ -1,5 +1,7 @@
 import type { ComponentType, ReactNode, SVGProps } from "react";
 
+type IconComp = ComponentType<SVGProps<SVGSVGElement>>;
+
 export function PageTitle({ title, sub }: { title: string; sub?: string }) {
   return (
     <div className="mb-5 flex items-center gap-3">
@@ -64,8 +66,33 @@ export function Badge({ children, tone = "gray" }: { children: ReactNode; tone?:
   );
 }
 
-export function Empty({ text }: { text: string }) {
-  return <p className="text-slate-400 text-sm py-6 text-center">{text}</p>;
+export function Empty({ text, icon }: { text: string; icon?: IconComp }) {
+  const Ico = icon;
+  return (
+    <div className="py-8 text-center">
+      {Ico && (
+        <span className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 mb-2">
+          <Ico width={24} height={24} />
+        </span>
+      )}
+      <p className="text-slate-400 text-sm">{text}</p>
+    </div>
+  );
+}
+
+export function SectionTitle({ icon, title, action }: { icon: IconComp; title: string; action?: ReactNode }) {
+  const Ico = icon;
+  return (
+    <div className="flex items-center justify-between gap-2 mb-2">
+      <h2 className="font-extrabold text-[15px] flex items-center gap-2">
+        <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-[var(--brand)]/10 text-[var(--brand)]">
+          <Ico width={16} height={16} />
+        </span>
+        {title}
+      </h2>
+      {action}
+    </div>
+  );
 }
 
 export function Field({ label, children }: { label: string; children: ReactNode }) {

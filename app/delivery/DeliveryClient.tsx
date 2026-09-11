@@ -2,7 +2,8 @@
 import { toast } from "@/components/toast";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { inputCls, btnGhostCls, Card, Badge , btnXsCls } from "@/components/ui";
+import { inputCls, btnGhostCls, Card, Badge, btnXsCls, Empty } from "@/components/ui";
+import { IconDelivery } from "@/components/icons";
 import { lyd, fmtDate, TASK_STATUS } from "@/lib/format";
 
 type T = {
@@ -52,7 +53,7 @@ export function DeliveryClient({ tasks }: { tasks: T[] }) {
           </div>
         </Card>
       ))}
-      {tasks.length === 0 && <Card><p className="text-center text-slate-400 py-6">لا مهام توصيل — فواتير التوصيل من نقطة البيع تظهر هنا</p></Card>}
+      {tasks.length === 0 && <Card><Empty text="لا مهام توصيل — فواتير التوصيل من نقطة البيع تظهر هنا" icon={IconDelivery} /></Card>}
     </div>
   );
 }

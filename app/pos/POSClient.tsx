@@ -118,14 +118,20 @@ export function POSClient({ products, customers, categories }: { products: P[]; 
       {outbox.length > 0 && (
         <Card>
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="font-bold text-amber-700 flex items-center gap-2"><Badge tone="amber">بلا نت</Badge> {outbox.length} فاتورة محفوظة — بانتظار المزامنة</p>
+            <p className="font-bold text-amber-700 flex items-center gap-2">
+              <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-amber-500/10"><IconBell width={19} height={19} /></span>
+              <span><Badge tone="amber">بلا نت</Badge> {outbox.length} فاتورة محفوظة — بانتظار المزامنة</span>
+            </p>
             <button className={btnCls} onClick={syncOutbox}>مزامنة الآن</button>
           </div>
         </Card>
       )}
       {done && (
         <Card>
-          <p className="font-bold text-green-700">تم حفظ الفاتورة {done.no} بنجاح</p>
+          <p className="font-bold text-emerald-700 flex items-center gap-2">
+            <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-emerald-500/10"><IconCheck width={19} height={19} /></span>
+            تم حفظ الفاتورة {done.no} بنجاح
+          </p>
           <div className="flex gap-2 mt-2">
             <a href={`/sales/${done.id}`} className={btnCls}>فتح الفاتورة / طباعة</a>
             <button className={btnGhostCls} onClick={() => setDone(null)}>بيع جديد</button>

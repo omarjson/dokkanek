@@ -2,7 +2,8 @@
 import { toast } from "@/components/toast";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { inputCls, btnCls, Field, Card, Badge } from "@/components/ui";
+import { inputCls, btnCls, Field, Card, Badge, SectionTitle } from "@/components/ui";
+import { IconClock } from "@/components/icons";
 import { lyd, fmtDate } from "@/lib/format";
 
 type Shift = { id: string; opening: number; closing: number | null; openedAt: string; closedAt: string | null; status: string };
@@ -68,7 +69,7 @@ export function ShiftsClient({ open, history, expected }: { open: Shift | null; 
         )}
       </Card>
       <Card>
-        <h2 className="font-extrabold text-[15px] mb-2">سجل الورديات</h2>
+        <SectionTitle icon={IconClock} title="سجل الورديات" />
         <div className="overflow-x-auto">
         <table className="w-full text-sm min-w-[480px]">
           <tbody>

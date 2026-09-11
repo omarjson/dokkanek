@@ -2,7 +2,8 @@
 import { toast } from "@/components/toast";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { inputCls, btnCls, btnGhostCls, Field, Card, Badge } from "@/components/ui";
+import { inputCls, btnCls, btnGhostCls, Field, Card, Badge, SectionTitle } from "@/components/ui";
+import { IconTruck, IconReceipt } from "@/components/icons";
 import { lyd, fmtDate } from "@/lib/format";
 
 type Product = { id: string; name: string; salePrice: number };
@@ -88,7 +89,7 @@ export function SuppliersClient({ suppliers, products, purchases }: { suppliers:
       <div className="grid md:grid-cols-2 gap-3">
         <div className="min-w-0">
         <Card>
-          <h2 className="font-extrabold text-[15px] mb-2">الموردون</h2>
+          <SectionTitle icon={IconTruck} title="الموردون" />
           {suppliers.length === 0 ? (
             <p className="text-center text-slate-400 py-4 text-sm">لا موردين بعد</p>
           ) : (
@@ -109,7 +110,7 @@ export function SuppliersClient({ suppliers, products, purchases }: { suppliers:
         </div>
         <div className="min-w-0">
         <Card>
-          <h2 className="font-extrabold text-[15px] mb-2">أحدث فواتير الشراء</h2>
+          <SectionTitle icon={IconReceipt} title="أحدث فواتير الشراء" />
           {purchases.map((p) => (
             <div key={p.id} className="border-t py-2 text-sm">
               <div className="flex justify-between"><b>{p.no}</b><span>{lyd(p.total)}</span></div>

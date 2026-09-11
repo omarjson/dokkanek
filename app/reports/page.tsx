@@ -5,7 +5,7 @@ import { prisma } from "@/lib/db";
 import { requireRoles } from "@/lib/auth";
 import { ADMIN_ROLES } from "@/lib/format";
 import { lyd } from "@/lib/format";
-import { PageTitle, Stat, Card, Badge, btnGhostCls, btnXsCls } from "@/components/ui";
+import { PageTitle, Stat, Card, Badge, SectionTitle, btnGhostCls, btnXsCls } from "@/components/ui";
 import { IconChart, IconReceipt, IconBox, IconTrend, IconWallet } from "@/components/icons";
 
 const RANGES = [
@@ -79,7 +79,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: { ra
       </div>
       <div className="grid md:grid-cols-2 gap-3">
         <Card>
-          <h2 className="font-bold mb-2">الأعلى مبيعا</h2>
+          <SectionTitle icon={IconTrend} title="الأعلى مبيعا" />
           {top.map((t) => (
             <div key={t.name} className="mb-2">
               <div className="flex justify-between text-sm"><span>{t.name}</span><b>{lyd(t.revenue)}</b></div>
@@ -92,7 +92,7 @@ export default async function ReportsPage({ searchParams }: { searchParams: { ra
           {top.length === 0 && <p className="text-slate-400 text-sm">لا مبيعات في الفترة</p>}
         </Card>
         <Card>
-          <h2 className="font-bold mb-2">حسب التصنيف</h2>
+          <SectionTitle icon={IconBox} title="حسب التصنيف" />
           <table className="w-full text-sm">
             <tbody>
               {cats.map(([name, c]) => (
