@@ -15,6 +15,7 @@ export const MODULES: StoreModule[] = [
   { key: "developers", label: "الربط API/MCP", desc: "مفتاح الربط الخارجي والذكاء الاصطناعي" },
   { key: "notifications", label: "التنبيهات", desc: "طابور رسائل الزبائن" },
   { key: "import", label: "الاستيراد", desc: "استيراد الأصناف من Excel" },
+  { key: "stocktake", label: "الجرد المخزني", desc: "جرد فعلي وتسوية الفروقات" },
 ];
 
 // presets حسب النشاط: القيم المذكورة فقط تُطفأ، الباقي يعمل

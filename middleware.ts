@@ -5,6 +5,7 @@ export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   if (
     pathname.startsWith("/login") ||
+    pathname.startsWith("/setup") ||
     pathname.startsWith("/track") ||
     pathname.startsWith("/offline") ||
     pathname === "/sw.js" ||
@@ -12,6 +13,7 @@ export function middleware(req: NextRequest) {
     pathname === "/icon" ||
     pathname === "/icon.svg" ||
     pathname.startsWith("/api/auth") ||
+    pathname.startsWith("/api/setup") ||
     pathname.startsWith("/api/track") ||
     pathname.startsWith("/api/v1/docs") ||
     pathname.startsWith("/api/v1/products") ||

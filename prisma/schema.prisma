@@ -67,6 +67,7 @@ model Product {
   returns     Return[]
   damages     Damage[]
   purchases   PurchaseItem[]
+  stocktakes  StocktakeItem[]
 }
 
 model Customer {
@@ -291,4 +292,27 @@ model Notification {
   relatedId   String    @default("")
   createdAt   DateTime  @default(now())
   sentAt      DateTime?
+}
+
+model Stocktake {
+  id        String          @id @default(cuid())
+  no        String          @unique
+  branchId  String?
+  note      String          @default("")
+  status    String          @default("OPEN")
+  createdAt DateTime        @default(now())
+  closedAt  DateTime?
+  items     StocktakeItem[]
+}
+
+model StocktakeItem {
+  id          String    @id @default(cuid())
+  stocktakeId String
+  stocktake   Stocktake @relation(fields: [stocktakeId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product   @relation(fields: [productId], references: [id])
+  systemQty   Float
+  countedQty  Float     @default(0)
+
+  @@unique([stocktakeId, productId])
 }

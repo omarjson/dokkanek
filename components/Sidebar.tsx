@@ -7,7 +7,7 @@ import { IconMenu, IconX, IconLogout, IconCollapse } from "./icons";
 import {
   IconDashboard, IconCart, IconBox, IconReceipt, IconUsers, IconTruck,
   IconWallet, IconDelivery, IconWrench, IconReturns, IconClock, IconUpload,
-  IconChart, IconCode, IconId, IconShield, IconGear, IconBell, IconStore,
+  IconChart, IconCode, IconId, IconShield, IconGear, IconBell, IconStore, IconClipboard,
 } from "./icons";
 import { ROLES } from "@/lib/format";
 
@@ -16,7 +16,7 @@ const ICONS: Record<string, ComponentType<SVGProps<SVGSVGElement>>> = {
   customers: IconUsers, suppliers: IconTruck, expenses: IconWallet, delivery: IconDelivery,
   maintenance: IconWrench, returns: IconReturns, shifts: IconClock, import: IconUpload,
   reports: IconChart, developers: IconCode, employees: IconId, notifications: IconBell,
-  audit: IconShield, settings: IconGear, store: IconStore,
+  audit: IconShield, settings: IconGear, store: IconStore, stocktake: IconClipboard,
 };
 
 const SECTIONS = ["العمل", "المخزون", "الميدان", "الإدارة"];
