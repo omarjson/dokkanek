@@ -179,7 +179,7 @@ export function Sidebar({
       {/* جانبي لسطح المكتب */}
       <aside
         className={`hidden md:flex shrink-0 bg-slate-950 text-white sticky top-0 h-screen no-print transition-all duration-200 overflow-hidden border-e border-white/5 ${
-          collapsed ? "w-20" : "w-56"
+          collapsed ? "w-16" : "w-48"
         }`}
       >
         {navBody(collapsed)}

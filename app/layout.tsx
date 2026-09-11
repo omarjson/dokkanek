@@ -65,7 +65,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           <div className="min-h-screen md:flex md:items-stretch">
             <Sidebar links={LINKS} user={{ name: user.name, role: user.role }} storeName={storeName} />
             <div className="flex-1 min-w-0 flex flex-col">
-              <main className="flex-1 w-full max-w-6xl mx-auto px-3 sm:px-5 py-4 sm:py-6">{children}</main>
+              <main className="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-5 py-4 sm:py-6">{children}</main>
               <footer className="text-center text-xs text-slate-400 pb-5 no-print">
                 {storeName} — منظومة مفتوحة المصدر (MIT)
               </footer>
