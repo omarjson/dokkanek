@@ -101,7 +101,9 @@ export function Sidebar({
           </span>
           {!mini && <span className="font-display font-semibold text-[17px] leading-tight truncate">{storeName}</span>}
         </Link>
-        <nav className="nice-dark flex-1 overflow-y-auto px-2.5 pb-3 flex flex-col gap-0.5">
+        {/* الغلاف ltr ليظهر شريط التمرير يمينا، والمحتوى rtl */}
+        <nav dir="ltr" className="nice-dark flex-1 overflow-y-auto px-2.5 pb-3">
+          <div dir="rtl" className="flex flex-col gap-0.5">
           {home.map((l) => linkRow(l, mini))}
           {SECTIONS.map((sec) => {
             const items = visible.filter((l) => l.section === sec);
@@ -115,6 +117,7 @@ export function Sidebar({
               </div>
             );
           })}
+          </div>
         </nav>
         <div className="p-2.5 border-t border-white/10">
           {!mini ? (

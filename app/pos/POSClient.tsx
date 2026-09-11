@@ -149,7 +149,8 @@ export function POSClient({ products, customers, categories }: { products: P[]; 
               ))}
             </div>
           )}
-          <div className="mt-1 max-h-[440px] overflow-auto grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div dir="ltr" className="mt-1 max-h-[440px] overflow-auto">
+          <div dir="rtl" className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {list.map((p) => (
               <button
                 key={p.id}
@@ -171,6 +172,7 @@ export function POSClient({ products, customers, categories }: { products: P[]; 
               </button>
             ))}
             {list.length === 0 && <p className="text-slate-400 text-sm py-4 text-center col-span-full">لا نتائج مطابقة</p>}
+          </div>
           </div>
         </Card>
         </div>

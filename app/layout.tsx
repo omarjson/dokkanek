@@ -50,8 +50,8 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   const color = settings.primary_color || "#0d6efd";
 
   return (
-    <html lang="ar" dir="rtl">
-      <body className={`${plex.className} ${messiri.variable}`} style={{ "--brand": color } as CSSProperties}>
+    <html lang="ar" dir="ltr">
+      <body dir="rtl" className={`${plex.className} ${messiri.variable}`} style={{ "--brand": color } as CSSProperties}>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         {/* eslint-disable-next-line @next/next/no-page-custom-font */}
