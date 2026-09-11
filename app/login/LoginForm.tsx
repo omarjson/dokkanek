@@ -1,7 +1,13 @@
 "use client";
 import { useState } from "react";
 import { inputCls, btnCls } from "@/components/ui";
-import { IconStore } from "@/components/icons";
+import { IconStore, IconCart, IconBox, IconWrench } from "@/components/icons";
+
+const FEATURES = [
+  { icon: IconCart, text: "نقطة بيع سريعة: نقدي، بطاقة، آجل وتوصيل" },
+  { icon: IconBox, text: "مخزون وباركود وتنبيهات النواقص" },
+  { icon: IconWrench, text: "صيانة هواتف بتتبع QR للزبون" },
+];
 
 export function LoginForm() {
   const [username, setUsername] = useState("");
@@ -20,61 +26,102 @@ export function LoginForm() {
         body: JSON.stringify({ username, password }),
       });
       if (res.ok) window.location.href = "/";
-      else if (res.status === 429) setError("محاولات كثيرة — انتظر 5 دقائق");
-      else setError("بيانات الدخول غير صحيحة");
+      else if (res.status === 429) setError("محاولات كثيرة — انتظر 5 دقائق وحاول مجددا");
+      else setError("اسم المستخدم أو كلمة المرور غير صحيحة");
     } catch {
-      setError("تعذر الاتصال بالخادم");
+      setError("تعذر الاتصال بالخادم — تحقق من الإنترنت");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4 relative overflow-hidden">
-      <div className="absolute -top-24 -left-24 w-72 h-72 rounded-full bg-[var(--brand)]/30 blur-3xl" aria-hidden />
-      <div className="absolute -bottom-24 -right-24 w-72 h-72 rounded-full bg-[var(--brand)]/20 blur-3xl" aria-hidden />
-      <form onSubmit={submit} className="relative bg-white rounded-2xl shadow-2xl p-6 sm:p-8 w-full max-w-sm">
-        <div className="flex flex-col items-center mb-5">
-          <span className="flex items-center justify-center w-14 h-14 rounded-2xl bg-[var(--brand)] text-white mb-3">
-            <IconStore width={28} height={28} />
-          </span>
-          <h1 className="font-display font-semibold text-2xl">دكّانك</h1>
-          <p className="text-sm text-slate-500 mt-0.5">منظومة المبيعات — تسجيل الدخول</p>
+    <div className="min-h-screen bg-[#eef1f6] flex items-center justify-center p-4">
+      <div className="w-full max-w-4xl grid md:grid-cols-2 bg-white rounded-3xl shadow-[0_24px_64px_-16px_rgba(2,6,23,0.25)] overflow-hidden border border-slate-200/70">
+        {/* لوحة العلامة */}
+        <div className="relative hidden md:flex flex-col justify-between bg-slate-950 text-white p-8 overflow-hidden">
+          <div
+            className="absolute inset-0 opacity-[0.15]"
+            aria-hidden
+            style={{ backgroundImage: "radial-gradient(rgba(255,255,255,0.55) 1px, transparent 1px)", backgroundSize: "22px 22px" }}
+          />
+          <div
+            className="absolute -bottom-24 -start-24 w-72 h-72 rounded-full bg-[var(--brand)] opacity-30 blur-3xl"
+            aria-hidden
+          />
+          <div className="relative flex items-center gap-3">
+            <span className="flex items-center justify-center w-11 h-11 rounded-2xl bg-[var(--brand)] text-white font-display font-bold text-xl">
+              د
+            </span>
+            <span className="font-display font-semibold text-xl">دكّانك</span>
+          </div>
+          <div className="relative">
+            <p className="font-display font-semibold text-3xl leading-[1.9] mb-2">محلّك كله<br />في شاشة واحدة</p>
+            <p className="text-sm text-slate-400 leading-7 mb-6">منظومة مبيعات ليبية مفتوحة المصدر — عربية، خفيفة، وتشتغل حتى بلا نت.</p>
+            <ul className="flex flex-col gap-3">
+              {FEATURES.map((f, i) => {
+                const Ico = f.icon;
+                return (
+                  <li key={i} className="flex items-center gap-3 text-sm text-slate-200">
+                    <span className="flex items-center justify-center w-9 h-9 rounded-xl bg-white/10 shrink-0">
+                      <Ico width={18} height={18} />
+                    </span>
+                    {f.text}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+          <p className="relative text-[11px] text-slate-500">رخصة MIT — حرّة للأبد</p>
         </div>
-        <label className="block mb-3">
-          <span className="block text-sm mb-1 font-semibold text-slate-600">اسم المستخدم</span>
-          <input
-            className={inputCls}
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-            autoComplete="username"
-            autoFocus
-          />
-        </label>
-        <label className="block mb-4">
-          <span className="block text-sm mb-1 font-semibold text-slate-600">كلمة المرور</span>
-          <input
-            type="password"
-            className={inputCls}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            autoComplete="current-password"
-          />
-        </label>
-        {error && (
-          <p className="bg-rose-50 text-rose-700 border border-rose-200 rounded-xl text-sm font-bold px-3 py-2 mb-3">
-            {error}
-          </p>
-        )}
-        <button className={`${btnCls} w-full !py-3 text-base`} disabled={loading}>
-          {loading ? "جاري الدخول..." : "دخول"}
-        </button>
-        {process.env.NODE_ENV !== "production" && (
-          <p className="text-[11px] text-slate-400 mt-4 text-center">تجريبي: admin / admin123 — cashier / 1234</p>
-        )}
-      </form>
+
+        {/* الفورم */}
+        <div className="p-6 sm:p-10 flex flex-col justify-center">
+          <div className="md:hidden flex items-center gap-2.5 mb-6">
+            <span className="flex items-center justify-center w-10 h-10 rounded-2xl bg-[var(--brand)] text-white font-display font-bold text-lg">د</span>
+            <span className="font-display font-semibold text-xl">دكّانك</span>
+          </div>
+          <h1 className="font-display font-semibold text-2xl mb-1">مرحبا بعودتك</h1>
+          <p className="text-sm text-slate-500 mb-6">سجل الدخول للوصول إلى منظومتك</p>
+          <form onSubmit={submit}>
+            <label className="block mb-3">
+              <span className="block text-sm mb-1.5 font-semibold text-slate-600">اسم المستخدم</span>
+              <input
+                className={inputCls + " !py-3"}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                autoComplete="username"
+                autoFocus
+                placeholder="مثال: admin"
+              />
+            </label>
+            <label className="block mb-4">
+              <span className="block text-sm mb-1.5 font-semibold text-slate-600">كلمة المرور</span>
+              <input
+                type="password"
+                className={inputCls + " !py-3"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+                placeholder="••••••••"
+              />
+            </label>
+            {error && (
+              <p className="bg-rose-50 text-rose-700 border border-rose-200 rounded-xl text-sm font-bold px-3 py-2.5 mb-4">
+                {error}
+              </p>
+            )}
+            <button className={btnCls + " w-full !py-3.5 text-base"} disabled={loading}>
+              {loading ? "جاري الدخول..." : "دخول"}
+            </button>
+            {process.env.NODE_ENV !== "production" && (
+              <p className="text-[11px] text-slate-400 mt-4 text-center">تجريبي: admin / admin123 — cashier / 1234</p>
+            )}
+          </form>
+        </div>
+      </div>
     </div>
   );
 }
