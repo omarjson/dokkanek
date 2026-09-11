@@ -3,6 +3,7 @@ node_modules
 out
 *.db
 *.db-journal
+*.tsbuildinfo
 .env
 .env.local
 *.log
