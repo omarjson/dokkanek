@@ -6,6 +6,11 @@ export function middleware(req: NextRequest) {
   if (
     pathname.startsWith("/login") ||
     pathname.startsWith("/track") ||
+    pathname.startsWith("/offline") ||
+    pathname === "/sw.js" ||
+    pathname === "/manifest.webmanifest" ||
+    pathname === "/icon" ||
+    pathname === "/icon.svg" ||
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/api/track") ||
     pathname.startsWith("/_next") ||

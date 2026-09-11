@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit";
+import { queueNotification } from "@/lib/notify";
 import { cookies } from "next/headers";
 
 const FLOW = ["RECEIVED", "DIAGNOSIS", "WAITING_PARTS", "READY", "DELIVERED"];
@@ -21,6 +22,15 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     if (b.cost !== undefined) data.cost = Number(b.cost);
     await prisma.maintenanceTicket.update({ where: { id: t.id }, data });
     await audit("UPDATE", "Ticket", t.id, `تحويل ${t.no} إلى ${next}`, me?.name, me?.id);
+    if (next === "READY" && t.customerPhone) {
+      await queueNotification({
+        to: t.customerPhone,
+        template: "ticket_ready",
+        body: `دكّانك: جهازك (${t.device}) أصبح جاهزا للاستلام — تذكرة ${t.no}`,
+        relatedType: "Ticket",
+        relatedId: t.id,
+      }).catch(() => {});
+    }
   } else if (b.action === "part") {
     if (!b.name) return NextResponse.json({ error: "اسم القطعة مطلوب" }, { status: 400 });
     await prisma.ticketPart.create({ data: { ticketId: t.id, name: String(b.name), price: Number(b.price || 0) } });

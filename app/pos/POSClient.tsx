@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, PageTitle, inputCls, btnCls, btnGhostCls } from "@/components/ui";
 import { lyd, PAY_METHODS } from "@/lib/format";
@@ -17,6 +17,40 @@ export function POSClient({ products, customers }: { products: P[]; customers: {
   const [discount, setDiscount] = useState("0");
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState<{ no: string; id: string } | null>(null);
+  // طابور الأوفلاين: فواتير محفوظة في المتصفح تُزامَن عند عودة النت
+  const [outbox, setOutbox] = useState<unknown[]>([]);
+  useEffect(() => {
+    try {
+      const raw = typeof window === "undefined" ? null : localStorage.getItem("dk_outbox");
+      if (raw) setOutbox(JSON.parse(raw));
+    } catch {}
+  }, []);
+  function saveOutbox(list: unknown[]) {
+    setOutbox(list);
+    try {
+      localStorage.setItem("dk_outbox", JSON.stringify(list));
+    } catch {}
+  }
+  async function syncOutbox() {
+    const failed: unknown[] = [];
+    let okCount = 0;
+    for (const payload of outbox) {
+      try {
+        const res = await fetch("/api/sales", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        if (res.ok) okCount++;
+        else failed.push(payload);
+      } catch {
+        failed.push(payload);
+      }
+    }
+    saveOutbox(failed);
+    router.refresh();
+    alert(failed.length === 0 ? `تمت مزامنة ${okCount} فاتورة بنجاح` : `زُامن ${okCount} — تعذر ${failed.length}`);
+  }
 
   const list = q
     ? products.filter((p) => p.name.includes(q) || p.sku.includes(q) || (p.barcode || "").includes(q)).slice(0, 30)
@@ -40,31 +74,49 @@ export function POSClient({ products, customers }: { products: P[]; customers: {
   async function checkout() {
     if (cart.length === 0) return;
     setLoading(true);
-    const res = await fetch("/api/sales", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        items: cart.map((x) => ({ productId: x.id, qty: x.qty, price: x.price })),
-        payMethod, status,
-        customerId: customerId || null,
-        discount: Number(discount || 0),
-      }),
-    });
-    const j = await res.json().catch(() => ({}));
-    setLoading(false);
-    if (res.ok) {
-      setDone({ no: j.no, id: j.id });
+    const payload = {
+      items: cart.map((x) => ({ productId: x.id, qty: x.qty, price: x.price })),
+      payMethod, status,
+      customerId: customerId || null,
+      discount: Number(discount || 0),
+    };
+    try {
+      const res = await fetch("/api/sales", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const j = await res.json().catch(() => ({}));
+      if (res.ok) {
+        setDone({ no: j.no, id: j.id });
+        setCart([]);
+        setDiscount("0");
+        router.refresh();
+      } else {
+        alert(j.error || "تعذر إتمام البيع");
+      }
+    } catch {
+      // بلا نت: حفظ محلي للمزامنة لاحقا
+      saveOutbox([...outbox, payload]);
       setCart([]);
       setDiscount("0");
-      router.refresh();
-    } else {
-      alert(j.error || "تعذر إتمام البيع");
+      alert("لا يوجد اتصال — حُفظت الفاتورة في قائمة الانتظار وستُرسل عند عودة النت");
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
     <div>
       <PageTitle title="نقطة البيع" sub="نقدي • بطاقة • آجل • توصيل • انتظار" />
+      {outbox.length > 0 && (
+        <Card>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="font-bold text-amber-700">⚠ {outbox.length} فاتورة محفوظة بدون نت — بانتظار المزامنة</p>
+            <button className={btnCls} onClick={syncOutbox}>مزامنة الآن</button>
+          </div>
+        </Card>
+      )}
       {done && (
         <Card>
           <p className="font-bold text-green-700">تم حفظ الفاتورة {done.no} بنجاح</p>

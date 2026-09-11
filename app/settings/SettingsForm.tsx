@@ -10,6 +10,11 @@ const FIELDS = [
   { key: "address", label: "العنوان" },
   { key: "footer_note", label: "سطر الفاتورة" },
   { key: "currency", label: "العملة" },
+  { key: "wa_enabled", label: "تفعيل إرسال واتساب", type: "checkbox" },
+  { key: "wa_endpoint", label: "رابط مزود واتساب (Webhook)" },
+  { key: "wa_token", label: "مفتاح المزود" },
+  { key: "wa_sender", label: "اسم/رقم المرسل" },
+  { key: "notify_sale", label: "تنبيه الزبون بفاتورته تلقائيا", type: "checkbox" },
 ];
 
 export function SettingsForm({ initial }: { initial: Record<string, string> }) {
@@ -36,12 +41,21 @@ export function SettingsForm({ initial }: { initial: Record<string, string> }) {
         <div className="grid md:grid-cols-2 gap-2">
           {FIELDS.map((f) => (
             <Field key={f.key} label={f.label}>
-              <input
-                type={f.type || "text"}
-                className={inputCls}
-                value={form[f.key] || ""}
-                onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
-              />
+              {f.type === "checkbox" ? (
+                <input
+                  type="checkbox"
+                  className="w-5 h-5"
+                  checked={form[f.key] === "1"}
+                  onChange={(e) => setForm({ ...form, [f.key]: e.target.checked ? "1" : "" })}
+                />
+              ) : (
+                <input
+                  type={f.type || "text"}
+                  className={inputCls}
+                  value={form[f.key] || ""}
+                  onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
+                />
+              )}
             </Field>
           ))}
         </div>

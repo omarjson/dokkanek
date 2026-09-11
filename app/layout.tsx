@@ -4,9 +4,12 @@ import { Cairo } from "next/font/google";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { LogoutButton } from "@/components/LogoutButton";
+import { ServiceWorker } from "@/components/ServiceWorker";
 import { currentUser, ROLES, ADMIN_ROLES } from "@/lib/auth";
 
 const cairo = Cairo({ subsets: ["arabic", "latin"], weight: ["400", "600", "700", "800"] });
+
+export const viewport = { themeColor: "#0d6efd" };
 
 async function getSettings(): Promise<Record<string, string>> {
   try {
@@ -30,6 +33,7 @@ const LINKS: { href: string; label: string; roles?: string[] }[] = [
   { href: "/returns", label: "الرواجع والتالف" },
   { href: "/shifts", label: "الورديات" },
   { href: "/import", label: "استيراد", roles: ADMIN_ROLES },
+  { href: "/notifications", label: "التنبيهات", roles: ADMIN_ROLES },
   { href: "/employees", label: "الموظفون", roles: ADMIN_ROLES },
   { href: "/audit", label: "سجل الأمن", roles: ADMIN_ROLES },
   { href: "/settings", label: "الإعدادات", roles: ADMIN_ROLES },
@@ -44,6 +48,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   return (
     <html lang="ar" dir="rtl">
       <body className={cairo.className} style={{ "--brand": color } as CSSProperties}>
+        <ServiceWorker />
         <header className="bg-gradient-to-l from-[var(--brand)] to-black/40 text-white shadow-lg sticky top-0 z-20 no-print">
           <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
             <Link href="/" className="font-extrabold text-xl tracking-tight flex items-center gap-2">

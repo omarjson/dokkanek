@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit";
+import { queueNotification } from "@/lib/notify";
 import { cookies } from "next/headers";
 
 export async function GET() {
@@ -84,5 +85,20 @@ export async function POST(req: Request) {
     });
   }
   await audit("CREATE", "Sale", sale.id, `فاتورة ${no} بقيمة ${total}`, me?.name, me?.id);
+  try {
+    const st = Object.fromEntries((await prisma.setting.findMany()).map((r) => [r.key, r.value]));
+    if (st.notify_sale === "1" && b.customerId) {
+      const cust = await prisma.customer.findUnique({ where: { id: b.customerId } });
+      if (cust?.phone) {
+        await queueNotification({
+          to: cust.phone,
+          template: "invoice",
+          body: `${st.store_name || "دكّانك"}: فاتورتك ${no} بقيمة ${total} — شكرا لك`,
+          relatedType: "Sale",
+          relatedId: sale.id,
+        });
+      }
+    }
+  } catch {}
   return NextResponse.json({ ok: true, id: sale.id, no });
 }

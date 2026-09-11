@@ -278,3 +278,17 @@ model Setting {
   key   String @id
   value String @default("")
 }
+
+model Notification {
+  id          String    @id @default(cuid())
+  channel     String    @default("WHATSAPP")
+  to          String    @default("")
+  template    String    @default("")
+  body        String    @default("")
+  status      String    @default("PENDING")
+  error       String    @default("")
+  relatedType String    @default("")
+  relatedId   String    @default("")
+  createdAt   DateTime  @default(now())
+  sentAt      DateTime?
+}
