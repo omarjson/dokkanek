@@ -133,7 +133,7 @@ export function POSClient({ products, customers, categories }: { products: P[]; 
         </Card>
       )}
       <div className="grid lg:grid-cols-5 gap-4 items-start">
-        <div className="lg:col-span-3">
+        <div className="lg:col-span-3 min-w-0">
         <Card>
           <div className="relative mb-2">
             <span className="absolute start-3 top-1/2 -translate-y-1/2 text-slate-400"><IconSearch /></span>
@@ -174,7 +174,7 @@ export function POSClient({ products, customers, categories }: { products: P[]; 
           </div>
         </Card>
         </div>
-        <div className="lg:col-span-2 lg:sticky lg:top-4">
+        <div className="lg:col-span-2 lg:sticky lg:top-4 min-w-0">
         <Card>
           <h2 className="font-bold mb-2">السلة ({cart.length})</h2>
           {cart.length === 0 && <p className="text-slate-400 text-sm">السلة فارغة — اضغط على صنف لإضافته</p>}

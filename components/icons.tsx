@@ -89,6 +89,9 @@ export const IconStar = (p: SVGProps<SVGSVGElement>) => (
 export const IconStarFilled = (p: SVGProps<SVGSVGElement>) => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden {...p}><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 9.5l6.1-.9L12 3z" /></svg>
 );
+export const IconCollapse = (p: SVGProps<SVGSVGElement>) => (
+  <Base {...p}><path d="M14 6l-6 6 6 6" /><path d="M20 6l-6 6 6 6" /></Base>
+);
 export const IconArrowLeft = (p: SVGProps<SVGSVGElement>) => (
   <Base {...p}><path d="M19 12H5" /><path d="M11 6l-6 6 6 6" /></Base>
 );

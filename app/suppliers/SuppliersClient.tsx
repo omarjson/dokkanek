@@ -86,6 +86,7 @@ export function SuppliersClient({ suppliers, products, purchases }: { suppliers:
       )}
 
       <div className="grid md:grid-cols-2 gap-3">
+        <div className="min-w-0">
         <Card>
           <h2 className="font-extrabold text-[15px] mb-2">الموردون</h2>
           {suppliers.length === 0 ? (
@@ -105,6 +106,8 @@ export function SuppliersClient({ suppliers, products, purchases }: { suppliers:
           </div>
           )}
         </Card>
+        </div>
+        <div className="min-w-0">
         <Card>
           <h2 className="font-extrabold text-[15px] mb-2">أحدث فواتير الشراء</h2>
           {purchases.map((p) => (
@@ -116,6 +119,7 @@ export function SuppliersClient({ suppliers, products, purchases }: { suppliers:
           ))}
           {purchases.length === 0 && <p className="text-slate-400 text-sm">لا مشتريات بعد</p>}
         </Card>
+        </div>
       </div>
     </div>
   );
