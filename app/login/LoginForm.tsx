@@ -36,7 +36,7 @@ export function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen bg-[#eef1f6] flex items-center justify-center p-4">
+    <div className="min-h-screen w-full bg-[#eef1f6] flex items-center justify-center p-4">
       <div className="w-full max-w-4xl grid md:grid-cols-2 bg-white rounded-3xl shadow-[0_24px_64px_-16px_rgba(2,6,23,0.25)] overflow-hidden border border-slate-200/70">
         {/* لوحة العلامة */}
         <div className="relative hidden md:flex flex-col justify-between bg-slate-950 text-white p-8 overflow-hidden">
@@ -116,9 +116,11 @@ export function LoginForm() {
             <button className={btnCls + " w-full !py-3.5 text-base"} disabled={loading}>
               {loading ? "جاري الدخول..." : "دخول"}
             </button>
-            {process.env.NODE_ENV !== "production" && (
-              <p className="text-[11px] text-slate-400 mt-4 text-center">تجريبي: admin / admin123 — cashier / 1234</p>
-            )}
+            <div className="mt-4 rounded-xl bg-slate-50 border border-slate-200 px-3 py-2.5 text-center" dir="ltr">
+              <p className="text-[11px] font-bold text-slate-500 mb-1">حسابات التجربة</p>
+              <p className="text-xs text-slate-600 font-mono">admin / admin123 <span className="text-slate-400">• مدير</span></p>
+              <p className="text-xs text-slate-600 font-mono mt-0.5">cashier / 1234 <span className="text-slate-400">• كاشير</span></p>
+            </div>
           </form>
         </div>
       </div>
