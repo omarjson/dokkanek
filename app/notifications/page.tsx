@@ -1,12 +1,15 @@
 export const dynamic = "force-dynamic";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
+import { isModuleEnabled } from "@/lib/modules";
 import { requireRoles } from "@/lib/auth";
 import { ADMIN_ROLES } from "@/lib/format";
 import { PageTitle } from "@/components/ui";
 import { NotificationsClient } from "./NotificationsClient";
 
 export default async function NotificationsPage() {
+  const modOk = await isModuleEnabled("notifications");
+  if (!modOk) redirect("/");
   const me = await requireRoles(ADMIN_ROLES);
   if (!me) redirect("/");
   const [items, rows] = await Promise.all([

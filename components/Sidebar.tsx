@@ -21,7 +21,7 @@ const ICONS: Record<string, ComponentType<SVGProps<SVGSVGElement>>> = {
 
 const SECTIONS = ["العمل", "المخزون", "الميدان", "الإدارة"];
 
-export type NavLink = { href: string; label: string; icon: string; section?: string; roles?: string[] };
+export type NavLink = { href: string; label: string; icon: string; section?: string; mod?: string; roles?: string[] };
 
 export function Sidebar({
   links,

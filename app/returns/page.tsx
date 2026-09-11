@@ -1,9 +1,13 @@
 export const dynamic = "force-dynamic";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
+import { isModuleEnabled } from "@/lib/modules";
 import { PageTitle } from "@/components/ui";
 import { ReturnsClient } from "./ReturnsClient";
 
 export default async function ReturnsPage() {
+  const modOk = await isModuleEnabled("returns");
+  if (!modOk) redirect("/");
   const [products, returns, damages] = await Promise.all([
     prisma.product.findMany({ where: { active: true }, orderBy: { name: "asc" }, take: 500 }),
     prisma.return.findMany({ orderBy: { date: "desc" }, take: 100, include: { product: true, sale: true } }),

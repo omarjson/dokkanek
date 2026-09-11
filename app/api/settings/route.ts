@@ -10,6 +10,15 @@ export async function GET() {
 }
 
 export async function PUT(req: Request) {
+  return saveSettings(req);
+}
+
+// POST بديل لـ PUT (بعض بيئات ويندوز ترفض PUT على مستوى السيرفر)
+export async function POST(req: Request) {
+  return saveSettings(req);
+}
+
+async function saveSettings(req: Request) {
   const me = await requireRoles(ADMIN_ROLES);
   if (!me) return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
   const b = await req.json();

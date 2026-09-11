@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
+import { isModuleEnabled } from "@/lib/modules";
 import { requireRoles } from "@/lib/auth";
 import { ADMIN_ROLES } from "@/lib/format";
 import { lyd } from "@/lib/format";
@@ -15,6 +16,8 @@ const RANGES = [
 ];
 
 export default async function ReportsPage({ searchParams }: { searchParams: { range?: string } }) {
+  const modOk = await isModuleEnabled("reports");
+  if (!modOk) redirect("/");
   const me = await requireRoles(ADMIN_ROLES);
   if (!me) redirect("/");
   const range = RANGES.find((r) => r.key === searchParams.range) || RANGES[2];

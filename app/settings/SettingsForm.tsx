@@ -1,7 +1,7 @@
 "use client";
-import { toast } from "@/components/toast";
 import { useState } from "react";
 import { inputCls, btnCls, Field, Card } from "@/components/ui";
+import { toast } from "@/components/toast";
 
 const FIELDS = [
   { key: "store_name", label: "اسم المتجر" },
@@ -25,7 +25,7 @@ export function SettingsForm({ initial }: { initial: Record<string, string> }) {
   async function save(e: React.FormEvent) {
     e.preventDefault();
     const res = await fetch("/api/settings", {
-      method: "PUT",
+      method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
     });
@@ -33,7 +33,7 @@ export function SettingsForm({ initial }: { initial: Record<string, string> }) {
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
       window.location.reload();
-    } else toast("تعذر الحفظ");
+    } else toast("تعذر الحفظ", "error");
   }
 
   return (

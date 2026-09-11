@@ -1,9 +1,13 @@
 export const dynamic = "force-dynamic";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
+import { isModuleEnabled } from "@/lib/modules";
 import { PageTitle } from "@/components/ui";
 import { MaintenanceClient } from "./MaintenanceClient";
 
 export default async function MaintenancePage() {
+  const modOk = await isModuleEnabled("maintenance");
+  if (!modOk) redirect("/");
   const tickets = await prisma.maintenanceTicket.findMany({
     orderBy: { receivedAt: "desc" },
     take: 200,

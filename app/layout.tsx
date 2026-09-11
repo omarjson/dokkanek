@@ -5,6 +5,7 @@ import { prisma } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 import { ADMIN_ROLES } from "@/lib/format";
 import { Sidebar, type NavLink } from "@/components/Sidebar";
+import { getModuleState } from "@/lib/modules";
 import { Toaster } from "@/components/toast";
 import { ServiceWorker } from "@/components/ServiceWorker";
 
@@ -28,17 +29,17 @@ const LINKS: NavLink[] = [
   { href: "/sales", label: "الفواتير", icon: "sales", section: "العمل" },
   { href: "/customers", label: "الزبائن والديون", icon: "customers", section: "العمل" },
   { href: "/products", label: "الأصناف", icon: "products", section: "المخزون" },
-  { href: "/suppliers", label: "الموردون", icon: "suppliers", section: "المخزون" },
-  { href: "/expenses", label: "المصروفات", icon: "expenses", section: "المخزون" },
-  { href: "/returns", label: "الرواجع والتالف", icon: "returns", section: "المخزون" },
-  { href: "/shifts", label: "الورديات", icon: "shifts", section: "المخزون" },
-  { href: "/delivery", label: "التوصيل", icon: "delivery", section: "الميدان" },
-  { href: "/maintenance", label: "الصيانة", icon: "maintenance", section: "الميدان" },
-  { href: "/import", label: "استيراد", icon: "import", section: "الإدارة", roles: ADMIN_ROLES },
-  { href: "/reports", label: "التقارير", icon: "reports", section: "الإدارة", roles: ADMIN_ROLES },
-  { href: "/developers", label: "المطورون", icon: "developers", section: "الإدارة", roles: ADMIN_ROLES },
-  { href: "/employees", label: "الموظفون", icon: "employees", section: "الإدارة", roles: ADMIN_ROLES },
-  { href: "/notifications", label: "التنبيهات", icon: "notifications", section: "الإدارة", roles: ADMIN_ROLES },
+  { href: "/suppliers", label: "الموردون", icon: "suppliers", section: "المخزون", mod: "suppliers" },
+  { href: "/expenses", label: "المصروفات", icon: "expenses", section: "المخزون", mod: "expenses" },
+  { href: "/returns", label: "الرواجع والتالف", icon: "returns", section: "المخزون", mod: "returns" },
+  { href: "/shifts", label: "الورديات", icon: "shifts", section: "المخزون", mod: "shifts" },
+  { href: "/delivery", label: "التوصيل", icon: "delivery", section: "الميدان", mod: "delivery" },
+  { href: "/maintenance", label: "الصيانة", icon: "maintenance", section: "الميدان", mod: "maintenance" },
+  { href: "/import", label: "استيراد", icon: "import", section: "الإدارة", mod: "import", roles: ADMIN_ROLES },
+  { href: "/reports", label: "التقارير", icon: "reports", section: "الإدارة", mod: "reports", roles: ADMIN_ROLES },
+  { href: "/developers", label: "المطورون", icon: "developers", section: "الإدارة", mod: "developers", roles: ADMIN_ROLES },
+  { href: "/employees", label: "الموظفون", icon: "employees", section: "الإدارة", mod: "employees", roles: ADMIN_ROLES },
+  { href: "/notifications", label: "التنبيهات", icon: "notifications", section: "الإدارة", mod: "notifications", roles: ADMIN_ROLES },
   { href: "/audit", label: "سجل الأمن", icon: "audit", section: "الإدارة", roles: ADMIN_ROLES },
   { href: "/settings", label: "الإعدادات", icon: "settings", section: "الإدارة", roles: ADMIN_ROLES },
 ];
@@ -46,8 +47,10 @@ const LINKS: NavLink[] = [
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const settings = await getSettings();
   const user = await currentUser().catch(() => null);
+  const { enabled } = await getModuleState();
   const storeName = settings.store_name || "دكّانك";
   const color = settings.primary_color || "#0d6efd";
+  const links = LINKS.filter((l) => !l.mod || enabled[l.mod]);
 
   return (
     <html lang="ar" dir="ltr">
@@ -63,7 +66,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         <Toaster />
         {user ? (
           <div className="min-h-screen md:flex md:items-stretch">
-            <Sidebar links={LINKS} user={{ name: user.name, role: user.role }} storeName={storeName} />
+            <Sidebar links={links} user={{ name: user.name, role: user.role }} storeName={storeName} />
             <div className="flex-1 min-w-0 flex flex-col">
               <main className="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-5 py-4 sm:py-6">{children}</main>
               <footer className="text-center text-xs text-slate-400 pb-5 no-print">

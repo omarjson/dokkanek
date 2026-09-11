@@ -1,9 +1,13 @@
 export const dynamic = "force-dynamic";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
+import { isModuleEnabled } from "@/lib/modules";
 import { PageTitle } from "@/components/ui";
 import { ShiftsClient } from "./ShiftsClient";
 
 export default async function ShiftsPage() {
+  const modOk = await isModuleEnabled("shifts");
+  if (!modOk) redirect("/");
   const [open, history] = await Promise.all([
     prisma.cashShift.findFirst({ where: { status: "OPEN" }, orderBy: { openedAt: "desc" } }),
     prisma.cashShift.findMany({ orderBy: { openedAt: "desc" }, take: 30 }),

@@ -1,12 +1,15 @@
 export const dynamic = "force-dynamic";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
+import { isModuleEnabled } from "@/lib/modules";
 import { requireRoles } from "@/lib/auth";
 import { ADMIN_ROLES } from "@/lib/format";
 import { PageTitle } from "@/components/ui";
 import { EmployeesClient } from "./EmployeesClient";
 
 export default async function EmployeesPage() {
+  const modOk = await isModuleEnabled("employees");
+  if (!modOk) redirect("/");
   const me = await requireRoles(ADMIN_ROLES);
   if (!me) redirect("/");
   const employees = await prisma.employee.findMany({

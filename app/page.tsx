@@ -3,13 +3,14 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { lyd, SALE_STATUS } from "@/lib/format";
 import { PageTitle, Card, Badge, Stat, TableWrap, THead, btnGhostCls } from "@/components/ui";
+import { getModuleState } from "@/lib/modules";
 import { IconCart, IconBox, IconUsers, IconBell, IconPlus, IconWrench, IconClock, IconReceipt } from "@/components/icons";
 
 const QUICK = [
   { href: "/pos", label: "بيع جديد", icon: IconCart, tint: "bg-emerald-500/10 text-emerald-600" },
   { href: "/products", label: "صنف جديد", icon: IconPlus, tint: "bg-sky-500/10 text-sky-600" },
-  { href: "/maintenance", label: "استلام صيانة", icon: IconWrench, tint: "bg-amber-500/10 text-amber-600" },
-  { href: "/shifts", label: "الوردية", icon: IconClock, tint: "bg-violet-500/10 text-violet-600" },
+  { href: "/maintenance", label: "استلام صيانة", icon: IconWrench, tint: "bg-amber-500/10 text-amber-600", mod: "maintenance" },
+  { href: "/shifts", label: "الوردية", icon: IconClock, tint: "bg-violet-500/10 text-violet-600", mod: "shifts" },
   { href: "/sales", label: "الفواتير", icon: IconReceipt, tint: "bg-slate-500/10 text-slate-500" },
 ];
 
@@ -46,14 +47,20 @@ export default async function Home() {
 
   const low = lowStock.filter((p) => p.quantity <= p.minQuantity).slice(0, 5);
   const todayProfit = todayItems.reduce((s, it) => s + (it.price - (it.product?.costPrice ?? 0)) * it.qty, 0);
-  const alerts = pending + tickets + tasks;
+  const { enabled } = await getModuleState();
+  const quick = QUICK.filter((q) => !q.mod || enabled[q.mod]);
+  const alertParts: string[] = [];
+  if (pending > 0) alertParts.push(`انتظار ${pending}`);
+  if (enabled.maintenance && tickets > 0) alertParts.push(`صيانة ${tickets}`);
+  if (enabled.delivery && tasks > 0) alertParts.push(`توصيل ${tasks}`);
+  const alerts = pending + (enabled.maintenance ? tickets : 0) + (enabled.delivery ? tasks : 0);
 
   return (
     <div>
       <PageTitle title="لوحة التحكم" sub="نظرة سريعة على حركة المحل" />
 
       <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mb-4 -mt-2">
-        {QUICK.map((q) => {
+        {quick.map((q) => {
           const Ico = q.icon;
           return (
             <Link
@@ -72,7 +79,7 @@ export default async function Home() {
       {alerts > 0 && (
         <div className="mb-4 -mt-2">
           <span className="inline-flex items-center gap-1.5 rounded-xl px-3 py-2 text-sm font-bold bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200 whitespace-nowrap">
-            <IconBell width={16} height={16} /> {alerts} تحتاج انتباها (انتظار {pending} • صيانة {tickets} • توصيل {tasks})
+            <IconBell width={16} height={16} /> {alerts} تحتاج انتباها ({alertParts.join(" • ")})
           </span>
         </div>
       )}
@@ -89,7 +96,9 @@ export default async function Home() {
           label="الأصناف"
           value={productsCount}
           sub={
-            openShift ? (
+            !enabled.shifts ? (
+              <span className="text-slate-400">الورديات معطلة</span>
+            ) : openShift ? (
               <Link href="/shifts" className="text-emerald-700 font-bold hover:underline">الوردية مفتوحة</Link>
             ) : (
               <Link href="/shifts" className="text-amber-700 font-bold hover:underline">الوردية مغلقة — افتح</Link>

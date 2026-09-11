@@ -1,9 +1,10 @@
 export const dynamic = "force-dynamic";
 import { prisma } from "@/lib/db";
+import { isModuleEnabled } from "@/lib/modules";
 import { POSClient } from "./POSClient";
 
 export default async function POSPage() {
-  const [products, customers, categories] = await Promise.all([
+  const [products, customers, categories, deliveryOn] = await Promise.all([
     prisma.product.findMany({
       where: { active: true },
       orderBy: [{ isFavorite: "desc" }, { name: "asc" }],
@@ -12,6 +13,7 @@ export default async function POSPage() {
     }),
     prisma.customer.findMany({ orderBy: { name: "asc" } }),
     prisma.category.findMany({ orderBy: { name: "asc" } }),
+    isModuleEnabled("delivery"),
   ]);
   const shaped = products.map((p) => ({
     id: p.id,
@@ -24,5 +26,5 @@ export default async function POSPage() {
     categoryId: p.categoryId,
     categoryName: p.category?.name || null,
   }));
-  return <POSClient products={shaped} customers={customers} categories={categories} />;
+  return <POSClient products={shaped} customers={customers} categories={categories} deliveryOn={deliveryOn} />;
 }

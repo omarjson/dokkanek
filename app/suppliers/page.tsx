@@ -1,9 +1,13 @@
 export const dynamic = "force-dynamic";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
+import { isModuleEnabled } from "@/lib/modules";
 import { PageTitle } from "@/components/ui";
 import { SuppliersClient } from "./SuppliersClient";
 
 export default async function SuppliersPage() {
+  const modOk = await isModuleEnabled("suppliers");
+  if (!modOk) redirect("/");
   const [suppliers, products, purchases] = await Promise.all([
     prisma.supplier.findMany({ orderBy: { name: "asc" } }),
     prisma.product.findMany({ where: { active: true }, orderBy: { name: "asc" }, take: 500 }),

@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 
 // وثيقة الـ API العام — عامة للاطلاع (المفتاح يُطلب عند الاستدعاء الفعلي)
-export async function GET() {
-  return NextResponse.json({
+export async function GET() {  return NextResponse.json({
     name: "Dokkanek API v1",
     auth: "ترويسة x-api-key بمفتاح يُولَّد من صفحة المطورين",
     base: "/api/v1",

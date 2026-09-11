@@ -1,9 +1,13 @@
 export const dynamic = "force-dynamic";
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
+import { isModuleEnabled } from "@/lib/modules";
 import { PageTitle } from "@/components/ui";
 import { DeliveryClient } from "./DeliveryClient";
 
 export default async function DeliveryPage() {
+  const modOk = await isModuleEnabled("delivery");
+  if (!modOk) redirect("/");
   const tasks = await prisma.courierTask.findMany({
     orderBy: { date: "desc" },
     take: 200,

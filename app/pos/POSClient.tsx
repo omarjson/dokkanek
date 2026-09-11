@@ -9,7 +9,7 @@ import { lyd, PAY_METHODS } from "@/lib/format";
 type P = { id: string; name: string; salePrice: number; quantity: number; sku: string; barcode: string; isFavorite: boolean; categoryId: string | null; categoryName: string | null };
 type CartItem = { id: string; name: string; price: number; qty: number; max: number };
 
-export function POSClient({ products, customers, categories }: { products: P[]; customers: { id: string; name: string }[]; categories: { id: string; name: string }[] }) {
+export function POSClient({ products, customers, categories, deliveryOn = true }: { products: P[]; customers: { id: string; name: string }[]; categories: { id: string; name: string }[]; deliveryOn?: boolean }) {
   const router = useRouter();
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("");
@@ -215,7 +215,7 @@ export function POSClient({ products, customers, categories }: { products: P[]; 
                 <option value="COMPLETED">بيع فوري</option>
                 <option value="PENDING">انتظار</option>
                 <option value="HELD">معلقة</option>
-                <option value="COURIER">توصيل (بحوزة مندوب)</option>
+                {deliveryOn && <option value="COURIER">توصيل (بحوزة مندوب)</option>}
               </select>
             </label>
             <label className="text-sm">خصم
