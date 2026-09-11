@@ -1,6 +1,6 @@
 export const dynamic = "force-dynamic";
 import { prisma } from "@/lib/db";
-import { PageTitle } from "@/components/ui";
+import { PageTitle, btnGhostCls } from "@/components/ui";
 import { CustomersClient } from "./CustomersClient";
 
 export default async function CustomersPage() {
@@ -19,6 +19,9 @@ export default async function CustomersPage() {
   return (
     <div>
       <PageTitle title="الزبائن والديون" sub="الآجل والسداد والمستحقات" />
+      <div className="mb-3 no-print">
+        <a href="/api/export?type=customers" className={btnGhostCls + " text-sm"}>تصدير CSV</a>
+      </div>
       <CustomersClient customers={shaped} />
     </div>
   );

@@ -2,7 +2,7 @@ export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { lyd, fmtDate, SALE_STATUS, PAY_METHODS } from "@/lib/format";
-import { PageTitle, Card, Badge, THead } from "@/components/ui";
+import { PageTitle, Card, Badge, THead, btnGhostCls } from "@/components/ui";
 import { SaleActions } from "./SaleActions";
 
 export default async function SalesPage() {
@@ -14,6 +14,9 @@ export default async function SalesPage() {
   return (
     <div>
       <PageTitle title="فواتير المبيعات" sub={`${sales.length} فاتورة (الأحدث أولا)`} />
+      <div className="mb-3 no-print">
+        <a href="/api/export?type=sales" className={btnGhostCls + " text-sm"}>تصدير CSV</a>
+      </div>
       <Card>
         <div className="overflow-x-auto">
         <table className="w-full text-sm min-w-[680px]">

@@ -31,6 +31,7 @@ const LINKS: NavLink[] = [
   { href: "/products", label: "الأصناف", icon: "products", section: "المخزون" },
   { href: "/stickers", label: "طباعة الستيكرات", icon: "stickers", section: "المخزون" },
   { href: "/stocktake", label: "الجرد", icon: "stocktake", section: "المخزون", mod: "stocktake" },
+  { href: "/transfers", label: "التحويلات", icon: "returns", section: "المخزون", mod: "transfers" },
   { href: "/suppliers", label: "الموردون", icon: "suppliers", section: "المخزون", mod: "suppliers" },
   { href: "/expenses", label: "المصروفات", icon: "expenses", section: "المخزون", mod: "expenses" },
   { href: "/returns", label: "الرواجع والتالف", icon: "returns", section: "المخزون", mod: "returns" },
