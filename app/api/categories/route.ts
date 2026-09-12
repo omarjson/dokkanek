@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit";
+import { hasPerm } from "@/lib/permissions";
 import { cookies } from "next/headers";
 
 async function who() {
@@ -19,7 +20,9 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const me = await who();
-  if (!me) return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
+  if (!me || !(await hasPerm(me.role, "price.edit"))) {
+    return NextResponse.json({ error: "إدارة التصنيفات تحتاج صلاحية" }, { status: 403 });
+  }
   const b = await req.json().catch(() => ({}));
   const name = String(b.name || "").trim();
   if (!name) return NextResponse.json({ error: "الاسم مطلوب" }, { status: 400 });

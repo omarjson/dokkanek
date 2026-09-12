@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit";
+import { hasPerm } from "@/lib/permissions";
 import { cookies } from "next/headers";
 
 async function who() {
@@ -15,6 +16,9 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const me = await who();
+  if (!me || !(await hasPerm(me.role, "expenses.view"))) {
+    return NextResponse.json({ error: "المصروفات تحتاج صلاحية" }, { status: 403 });
+  }
   const b = await req.json();
   if (!b.title || b.amount === undefined) return NextResponse.json({ error: "البيان والمبلغ مطلوبان" }, { status: 400 });
   const e = await prisma.expense.create({
@@ -26,6 +30,9 @@ export async function POST(req: Request) {
 
 export async function DELETE(req: Request) {
   const me = await who();
+  if (!me || !(await hasPerm(me.role, "expenses.view"))) {
+    return NextResponse.json({ error: "المصروفات تحتاج صلاحية" }, { status: 403 });
+  }
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
   if (!id) return NextResponse.json({ error: "مطلوب" }, { status: 400 });

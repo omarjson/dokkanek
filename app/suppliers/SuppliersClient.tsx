@@ -15,14 +15,16 @@ type Purchase = {
   items: { id: string; qty: number; price: number; product: { name: string } }[];
 };
 
-export function SuppliersClient({ suppliers, products, purchases }: { suppliers: Supplier[]; products: Product[]; purchases: Purchase[] }) {
+export function SuppliersClient({ suppliers, products, purchases, showUsd = false, usdRate = 0 }: {
+  suppliers: Supplier[]; products: Product[]; purchases: Purchase[]; showUsd?: boolean; usdRate?: number;
+}) {
   const router = useRouter();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [showBuy, setShowBuy] = useState(false);
   const [supplierId, setSupplierId] = useState("");
   const [paid, setPaid] = useState("0");
-  const [rows, setRows] = useState<{ productId: string; qty: string; price: string }[]>([{ productId: "", qty: "1", price: "" }]);
+  const [rows, setRows] = useState<{ productId: string; qty: string; price: string; usd: string }[]>([{ productId: "", qty: "1", price: "", usd: "" }]);
   const [payFor, setPayFor] = useState<string | null>(null);
   const [payAmt, setPayAmt] = useState("");
   const [paying, setPaying] = useState(false);
@@ -74,7 +76,13 @@ export function SuppliersClient({ suppliers, products, purchases }: { suppliers:
   }
 
   async function buy() {
-    const items = rows.filter((r) => r.productId && Number(r.qty) > 0).map((r) => ({ productId: r.productId, qty: Number(r.qty), price: Number(r.price || 0) }));
+    const items = rows
+      .filter((r) => r.productId && Number(r.qty) > 0)
+      .map((r) => {
+        const usd = Number(r.usd || 0);
+        const price = showUsd && usd > 0 && usdRate > 0 ? Math.round(usd * usdRate * 100) / 100 : Number(r.price || 0);
+        return { productId: r.productId, qty: Number(r.qty), price };
+      });
     if (!supplierId || items.length === 0) { toast("اختر المورد وصنفا واحدا على الأقل"); return; }
     if (paying) return;
     setPaying(true);
@@ -87,7 +95,7 @@ export function SuppliersClient({ suppliers, products, purchases }: { suppliers:
     setPaying(false);
     if (res.ok) {
       setShowBuy(false);
-      setRows([{ productId: "", qty: "1", price: "" }]);
+      setRows([{ productId: "", qty: "1", price: "", usd: "" }]);
       setPaid("0");
       router.refresh();
     } else toast(j.error || "تعذر الحفظ");
@@ -115,14 +123,21 @@ export function SuppliersClient({ suppliers, products, purchases }: { suppliers:
             <Field label="المدفوع الآن"><input type="number" min="0" className={inputCls} value={paid} onChange={(e) => setPaid(e.target.value)} /></Field>
           </div>
           {rows.map((r, i) => (
-            <div key={i} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 mb-2">
+            <div key={i} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 mb-2">
               <select className={inputCls} value={r.productId} onChange={(e) => setRows(rows.map((x, j) => (j === i ? { ...x, productId: e.target.value } : x)))}>
                 <option value="">اختر الصنف</option>
                 {products.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
               <input type="number" min="0.01" step="0.01" placeholder="الكمية" className={inputCls} value={r.qty} onChange={(e) => setRows(rows.map((x, j) => (j === i ? { ...x, qty: e.target.value } : x)))} />
+              {showUsd && (
+              <input type="number" min="0" step="0.01" placeholder={`$ بالدولار (× ${usdRate})`} className={inputCls} value={r.usd} onChange={(e) => {
+                const usd = e.target.value;
+                const price = usdRate > 0 ? String(Math.round(Number(usd || 0) * usdRate * 100) / 100) : r.price;
+                setRows(rows.map((x, j) => (j === i ? { ...x, usd, price } : x)));
+              }} />
+              )}
               <input type="number" min="0" step="0.01" placeholder="سعر الشراء" className={inputCls} value={r.price} onChange={(e) => setRows(rows.map((x, j) => (j === i ? { ...x, price: e.target.value } : x)))} />
-              <button type="button" className={btnGhostCls} onClick={() => setRows([...rows, { productId: "", qty: "1", price: "" }])}>+ سطر</button>
+              <button type="button" className={btnGhostCls} onClick={() => setRows([...rows, { productId: "", qty: "1", price: "", usd: "" }])}>+ سطر</button>
             </div>
           ))}
           <button className={btnCls} onClick={buy}>حفظ فاتورة الشراء</button>

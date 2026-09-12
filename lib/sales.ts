@@ -1,6 +1,7 @@
 import { prisma } from "./db";
 import { audit } from "./audit";
 import { queueNotification } from "./notify";
+import { hasPerm } from "./permissions";
 
 export type SaleInput = {
   items: { productId: string; qty: number; price: number }[];
@@ -9,9 +10,10 @@ export type SaleInput = {
   discount?: number | string;
   customerId?: string | null;
   courierName?: string;
+  payRef?: string;
 };
 
-export type Actor = { id?: string; name?: string; branchId?: string | null } | null;
+export type Actor = { id?: string; name?: string; branchId?: string | null; role?: string } | null;
 
 // منطق إنشاء الفاتورة المشترك بين الواجهة والـ API العام — أي تعديل هنا ينعكس على الاثنين
 export async function createSale(b: SaleInput, me: Actor) {
@@ -25,11 +27,18 @@ export async function createSale(b: SaleInput, me: Actor) {
     ? (b.payMethod as string)
     : "CASH";
   const discount = Number(b.discount || 0);
+  if (discount > 0 && !(await hasPerm(me?.role, "sales.discount"))) {
+    throw new Error("الخصم يحتاج صلاحية");
+  }
 
   let subtotal = 0;
+  const canPrice = await hasPerm(me?.role, "price.edit");
   for (const it of items) {
     const p = await prisma.product.findUnique({ where: { id: it.productId } });
     if (!p || !p.active) throw new Error("صنف غير صالح");
+    if (!canPrice && Math.abs(Number(it.price) - p.salePrice) > 0.001) {
+      throw new Error(`سعر ${p.name} معتمد ولا يمكن تغييره`);
+    }
     if ((status === "COMPLETED" || status === "COURIER") && p.quantity < Number(it.qty)) {
       throw new Error(`الكمية غير كافية: ${p.name}`);
     }
@@ -51,6 +60,7 @@ export async function createSale(b: SaleInput, me: Actor) {
       discount,
       total,
       paid,
+      payRef: String(b.payRef || ""),
     },
   });
 

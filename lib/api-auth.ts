@@ -9,7 +9,8 @@ export async function checkApiKey(req: Request) {
   if (!row || !row.value || row.value !== key) return null;
   const branch = await prisma.branch.findFirst();
   // بلا مستخدم حقيقي: cashierId يبقى null (مفتاح تكامل وليس موظفا)
-  return { id: undefined, name: "API", branchId: branch?.id || null };
+  // يُعامل كمدير للنظام في الصلاحيات — المفتاح نفسه بيد المالك فقط
+  return { id: undefined, name: "API", branchId: branch?.id || null, role: "ADMIN" };
 }
 
 export function unauthorized() {

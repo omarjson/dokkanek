@@ -7,7 +7,7 @@ import { toast } from "@/components/toast";
 
 type C = { id: string; name: string; _count: { products: number } };
 
-export function CategoriesManager({ categories }: { categories: C[] }) {
+export function CategoriesManager({ categories, canManage }: { categories: C[]; canManage: boolean }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
@@ -57,7 +57,7 @@ export function CategoriesManager({ categories }: { categories: C[] }) {
     <Card>
       <div className="flex items-center justify-between mb-2">
         <SectionTitle icon={IconBox} title={`التصنيفات (${categories.length})`} />
-        <button className={btnGhostCls + " text-sm"} onClick={() => setOpen(!open)}>+ تصنيف</button>
+        {canManage && <button className={btnGhostCls + " text-sm"} onClick={() => setOpen(!open)}>+ تصنيف</button>}
       </div>
       {open && (
         <form onSubmit={create} className="flex gap-2 mb-2">
@@ -77,9 +77,13 @@ export function CategoriesManager({ categories }: { categories: C[] }) {
             ) : (
               <>
                 {c.name} <Badge tone="gray">{c._count.products}</Badge>
-                <button className="text-[var(--brand)] hover:underline" onClick={() => setEditing({ id: c.id, name: c.name })}>تعديل</button>
-                {c._count.products === 0 && (
-                  <button className="text-rose-600 hover:underline" onClick={() => remove(c.id, c._count.products)}>حذف</button>
+                {canManage && (
+                  <>
+                    <button className="text-[var(--brand)] hover:underline" onClick={() => setEditing({ id: c.id, name: c.name })}>تعديل</button>
+                    {c._count.products === 0 && (
+                      <button className="text-rose-600 hover:underline" onClick={() => remove(c.id, c._count.products)}>حذف</button>
+                    )}
+                  </>
                 )}
               </>
             )}

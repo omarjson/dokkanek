@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit";
+import { hasPerm } from "@/lib/permissions";
 import { cookies } from "next/headers";
 
 async function who() {
@@ -11,7 +12,9 @@ async function who() {
 
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
   const me = await who();
-  if (!me) return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
+  if (!me || !(await hasPerm(me.role, "price.edit"))) {
+    return NextResponse.json({ error: "إدارة التصنيفات تحتاج صلاحية" }, { status: 403 });
+  }
   const b = await req.json().catch(() => ({}));
   const name = String(b.name || "").trim();
   if (!name) return NextResponse.json({ error: "الاسم مطلوب" }, { status: 400 });
@@ -22,6 +25,9 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
 
 export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
   const me = await who();
+  if (!me || !(await hasPerm(me.role, "price.edit"))) {
+    return NextResponse.json({ error: "إدارة التصنيفات تحتاج صلاحية" }, { status: 403 });
+  }
   if (!me) return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
   const used = await prisma.product.count({ where: { categoryId: params.id } });
   if (used > 0) {

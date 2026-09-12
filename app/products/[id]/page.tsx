@@ -2,6 +2,8 @@ export const dynamic = "force-dynamic";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
+import { currentUser } from "@/lib/auth";
+import { hasPerm } from "@/lib/permissions";
 import { lyd, fmtDate } from "@/lib/format";
 import { PageTitle, Card, Badge, SectionTitle } from "@/components/ui";
 import { IconBox } from "@/components/icons";
@@ -21,13 +23,14 @@ export default async function ProductLedgerPage({ params }: { params: { id: stri
     },
   });
   if (!p) notFound();
+  const canCost = await hasPerm((await currentUser().catch(() => null))?.role, "cost.view");
 
   return (
     <div className="max-w-3xl mx-auto">
       <PageTitle title={p.name} sub={`${p.sku} • ${p.category?.name ?? "بدون تصنيف"} • الرصيد الحالي ${p.quantity}`} />
       <Card>
         <div className="grid grid-cols-3 gap-2 text-center text-sm mb-2">
-          <div><div className="text-slate-500 text-xs">التكلفة</div><b className="tnum">{lyd(p.costPrice)}</b></div>
+          <div><div className="text-slate-500 text-xs">التكلفة</div><b className="tnum">{canCost ? lyd(p.costPrice) : "—"}</b></div>
           <div><div className="text-slate-500 text-xs">البيع</div><b className="tnum">{lyd(p.salePrice)}</b></div>
           <div><div className="text-slate-500 text-xs">الرصيد</div><b className="tnum">{p.quantity}</b></div>
         </div>

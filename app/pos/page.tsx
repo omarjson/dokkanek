@@ -1,6 +1,8 @@
 export const dynamic = "force-dynamic";
 import { prisma } from "@/lib/db";
 import { isModuleEnabled } from "@/lib/modules";
+import { currentUser } from "@/lib/auth";
+import { hasPerm } from "@/lib/permissions";
 import { POSClient } from "./POSClient";
 
 export default async function POSPage() {
@@ -26,5 +28,5 @@ export default async function POSPage() {
     categoryId: p.categoryId,
     categoryName: p.category?.name || null,
   }));
-  return <POSClient products={shaped} customers={customers} categories={categories} deliveryOn={deliveryOn} />;
+  return <POSClient products={shaped} customers={customers} categories={categories} deliveryOn={deliveryOn} canDiscount={await hasPerm((await currentUser().catch(() => null))?.role, "sales.discount")} />;
 }

@@ -1,8 +1,8 @@
 export const dynamic = "force-dynamic";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
-import { requireRoles } from "@/lib/auth";
-import { ADMIN_ROLES } from "@/lib/format";
+import { currentUser } from "@/lib/auth";
+import { hasPerm } from "@/lib/permissions";
 import { PageTitle, Card, SectionTitle } from "@/components/ui";
 import { IconBox } from "@/components/icons";
 import { SettingsForm } from "./SettingsForm";
@@ -10,8 +10,8 @@ import { ModulesForm } from "./ModulesForm";
 import { getModuleState } from "@/lib/modules";
 
 export default async function SettingsPage() {
-  const me = await requireRoles(ADMIN_ROLES);
-  if (!me) redirect("/");
+  const me = await currentUser();
+  if (!me || !(await hasPerm(me.role, "settings.edit"))) redirect("/");
   const rows = await prisma.setting.findMany();
   const initial = Object.fromEntries(rows.map((r) => [r.key, r.value]));
   const { enabled, preset } = await getModuleState();

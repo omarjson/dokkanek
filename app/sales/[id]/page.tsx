@@ -23,6 +23,7 @@ export default async function InvoicePage({ params }: { params: { id: string } }
         <p className="text-sm mt-2">فاتورة مبيعات: <b>{sale.no}</b></p>
         <p className="text-xs text-slate-500">{SALE_STATUS[sale.status] ?? sale.status} • {PAY_METHODS[sale.payMethod] ?? sale.payMethod} • {fmtDate(sale.date)}</p>
         {sale.customer && <p className="text-sm">الزبون: {sale.customer.name}</p>}
+        {sale.payRef && <p className="text-sm">مرجع الدفع: <b dir="ltr">{sale.payRef}</b></p>}
         {sale.cashier && <p className="text-xs text-slate-500">الكاشير: {sale.cashier.name}</p>}
       </div>
       <table className="w-full text-sm">

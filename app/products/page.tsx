@@ -1,6 +1,8 @@
 export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
+import { currentUser } from "@/lib/auth";
+import { hasPerm } from "@/lib/permissions";
 import { PageTitle, Card, Badge, Empty, inputCls, btnGhostCls, btnXsCls } from "@/components/ui";
 import { IconStarFilled, IconBox } from "@/components/icons";
 import { ProductForm } from "./ProductForm";
@@ -30,6 +32,17 @@ export default async function ProductsPage({
     prisma.warehouse.findMany({ orderBy: { name: "asc" } }),
   ]);
   const shown = searchParams.low ? products.filter((p) => p.quantity <= p.minQuantity) : products;
+  const me = await currentUser().catch(() => null);
+  const role = me?.role;
+  const [canCost, canPrice, canDelete, canUsd] = await Promise.all([
+    hasPerm(role, "cost.view"),
+    hasPerm(role, "price.edit"),
+    hasPerm(role, "products.delete"),
+    hasPerm(role, "price.usd"),
+  ]);
+  const settings = Object.fromEntries((await prisma.setting.findMany()).map((r) => [r.key, r.value]));
+  const showUsd = settings.cost_usd_enabled === "1" && canUsd;
+  const usdRate = Number(settings.usd_rate || 0);
 
   return (
     <div>
@@ -46,12 +59,12 @@ export default async function ProductsPage({
           <Link href="/products" className={btnGhostCls + " text-sm"}>الكل</Link>
         </div>
       </Card>
-      <ProductForm categories={categories} warehouses={warehouses} />
-      <CategoriesManager categories={categories} />
+      {canPrice && <ProductForm categories={categories} warehouses={warehouses} canCost={canCost} showUsd={showUsd} usdRate={usdRate} />}
+      <CategoriesManager categories={categories} canManage={canPrice} />
       {shown.length === 0 ? (
         <Card><Empty text="لا أصناف مطابقة — جرّب بحثا آخر أو أضف صنفا جديدا" icon={IconBox} /></Card>
       ) : (
-        <ProductsTable products={shown} />
+        <ProductsTable products={shown} canCost={canCost} canEdit={canPrice} canDelete={canDelete} showUsd={showUsd} usdRate={usdRate} />
       )}
       {searchParams.low && <p className="text-xs text-slate-500 mt-2"><Badge tone="red">تنبيه</Badge> الأصناف التي وصلت للحد الأدنى أو تحته.</p>}
     </div>

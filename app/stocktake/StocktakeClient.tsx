@@ -10,7 +10,7 @@ type Product = { id: string; name: string; sku: string; quantity: number };
 type Item = { id: string; countedQty: number; systemQty: number; product: { id: string; name: string; sku: string } };
 type ST = { id: string; no: string; status: string; note: string; createdAt: string; items: Item[] };
 
-export function StocktakeClient({ sessions, products }: { sessions: ST[]; products: Product[] }) {
+export function StocktakeClient({ sessions, products, canAdjust }: { sessions: ST[]; products: Product[]; canAdjust: boolean }) {
   const router = useRouter();
   const [note, setNote] = useState("");
   const [openId, setOpenId] = useState<string | null>(sessions.find((s) => s.status === "OPEN")?.id || null);
@@ -116,9 +116,11 @@ export function StocktakeClient({ sessions, products }: { sessions: ST[]; produc
               </tbody>
             </table>
           </div>
+          {canAdjust && (
           <button className={btnCls} onClick={() => close(open.id)}>
             <span className="inline-flex items-center gap-2"><IconCheck /> إقفال وتسوية الفروقات</span>
           </button>
+          )}
         </Card>
       )}
 

@@ -21,7 +21,7 @@ const ICONS: Record<string, ComponentType<SVGProps<SVGSVGElement>>> = {
 
 const SECTIONS = ["العمل", "المخزون", "الميدان", "الإدارة"];
 
-export type NavLink = { href: string; label: string; icon: string; section?: string; mod?: string; roles?: string[] };
+export type NavLink = { href: string; label: string; icon: string; section?: string; mod?: string; perm?: string; roles?: string[] };
 
 export function Sidebar({
   links,
@@ -35,7 +35,19 @@ export function Sidebar({
   const [open, setOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
-  const visible = links.filter((l) => !l.roles || l.roles.includes(user.role));
+  const [perms, setPerms] = useState<string[]>([]);
+  const visible = links.filter((l) => {
+    if (l.roles && !l.roles.includes(user.role)) return false;
+    if (l.perm && !perms.includes(l.perm) && !perms.includes("*")) return false;
+    return true;
+  });
+
+  useEffect(() => {
+    fetch("/api/my-perms")
+      .then((r) => (r.ok ? r.json() : { perms: [] }))
+      .then((j) => setPerms(j.perms || []))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     try {

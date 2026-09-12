@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { requireRoles } from "@/lib/auth";
-import { ADMIN_ROLES } from "@/lib/format";
+import { hasPerm } from "@/lib/permissions";
 import { audit } from "@/lib/audit";
 import { cookies } from "next/headers";
 
@@ -13,14 +12,31 @@ async function who() {
 
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
   const me = await who();
+  if (!me) return NextResponse.json({ error: "غير مصرح" }, { status: 401 });
   const b = await req.json();
   const old = await prisma.product.findUnique({ where: { id: params.id } });
   if (!old) return NextResponse.json({ error: "غير موجود" }, { status: 404 });
+
+  // التكلفة سرية: تحتاج cost.view (والدولار price.usd) — باقي الحقول price.edit
+  const wantsCost = b.costPrice !== undefined;
+  const wantsUsd = b.costUsd !== undefined;
+  const wantsRest = ["name", "salePrice", "quantity", "barcode", "minQuantity", "legacyNo", "categoryId", "warehouseId"].some((k) => b[k] !== undefined);
+  if (wantsCost && !(await hasPerm(me.role, "cost.view"))) {
+    return NextResponse.json({ error: "رؤية التكلفة تحتاج صلاحية" }, { status: 403 });
+  }
+  if (wantsUsd && !(await hasPerm(me.role, "price.usd"))) {
+    return NextResponse.json({ error: "الدولار يحتاج صلاحية" }, { status: 403 });
+  }
+  if (wantsRest && !(await hasPerm(me.role, "price.edit"))) {
+    return NextResponse.json({ error: "تعديل الأصناف يحتاج صلاحية" }, { status: 403 });
+  }
+
   const data: Record<string, unknown> = {};
-  for (const k of ["name", "costPrice", "salePrice", "quantity", "barcode", "minQuantity", "isFavorite", "legacyNo", "categoryId", "warehouseId"]) {
+  for (const k of ["name", "costPrice", "costUsd", "salePrice", "quantity", "barcode", "minQuantity", "isFavorite", "legacyNo", "categoryId", "warehouseId"]) {
     if (b[k] !== undefined) data[k] = b[k];
   }
   if (typeof data.costPrice !== "undefined") data.costPrice = Number(data.costPrice);
+  if (typeof data.costUsd !== "undefined") data.costUsd = Number(data.costUsd);
   if (typeof data.salePrice !== "undefined") data.salePrice = Number(data.salePrice);
   if (typeof data.quantity !== "undefined") data.quantity = Number(data.quantity);
   if (typeof data.minQuantity !== "undefined") data.minQuantity = Number(data.minQuantity);
@@ -41,8 +57,10 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
 }
 
 export async function DELETE(_req: Request, { params }: { params: { id: string } }) {
-  const me = await requireRoles(ADMIN_ROLES);
-  if (!me) return NextResponse.json({ error: "غير مصرح — الحذف للإدارة فقط" }, { status: 403 });
+  const me = await who();
+  if (!me || !(await hasPerm(me.role, "products.delete"))) {
+    return NextResponse.json({ error: "الحذف يحتاج صلاحية" }, { status: 403 });
+  }
   const used = await prisma.saleItem.count({ where: { productId: params.id } });
   if (used > 0) {
     await prisma.product.update({ where: { id: params.id }, data: { active: false } });

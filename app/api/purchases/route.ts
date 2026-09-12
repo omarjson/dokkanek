@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit";
+import { hasPerm } from "@/lib/permissions";
 import { cookies } from "next/headers";
 
 // تسجيل فاتورة شراء: تزيد المخزون + حركة IN + دين للمورد لو غير مدفوعة
@@ -10,6 +11,9 @@ export async function POST(req: Request) {
     : null;
   const b = await req.json();
   const items = (b.items || []) as { productId: string; qty: number; price: number }[];
+  if (!me || !(await hasPerm(me.role, "purchases.manage"))) {
+    return NextResponse.json({ error: "المشتريات تحتاج صلاحية" }, { status: 403 });
+  }
   if (!b.supplierId || items.length === 0) {
     return NextResponse.json({ error: "المورد والأصناف مطلوبة" }, { status: 400 });
   }

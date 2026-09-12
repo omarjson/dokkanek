@@ -1,5 +1,7 @@
 export const dynamic = "force-dynamic";
 import { prisma } from "@/lib/db";
+import { currentUser } from "@/lib/auth";
+import { hasPerm } from "@/lib/permissions";
 import { PageTitle } from "@/components/ui";
 import { StocktakeClient } from "./StocktakeClient";
 
@@ -22,7 +24,7 @@ export default async function StocktakePage() {
   return (
     <div>
       <PageTitle title="الجرد المخزني" sub="عدّ الأصناف فعليا ثم اقفل — الفروقات تُسوّى تلقائيا وتُسجل" />
-      <StocktakeClient sessions={shaped} products={products} />
+      <StocktakeClient sessions={shaped} products={products} canAdjust={await hasPerm((await currentUser().catch(() => null))?.role, "stocktake.adjust")} />
     </div>
   );
 }

@@ -1,11 +1,25 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { requireRoles, hashPassword } from "@/lib/auth";
+import { hashPassword } from "@/lib/auth";
+import { hasPerm } from "@/lib/permissions";
 import { ADMIN_ROLES } from "@/lib/format";
 import { audit } from "@/lib/audit";
+import { cookies } from "next/headers";
+
+async function who() {
+  const id = cookies().get("dk_session")?.value;
+  if (!id) return null;
+  return prisma.user.findUnique({ where: { id } });
+}
+
+async function needUsersManage() {
+  const me = await who();
+  if (!me || !(await hasPerm(me.role, "users.manage"))) return null;
+  return me;
+}
 
 export async function GET() {
-  const me = await requireRoles(ADMIN_ROLES);
+  const me = await needUsersManage();
   if (!me) return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
   const users = await prisma.user.findMany({
     orderBy: { createdAt: "asc" },
@@ -15,7 +29,7 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const me = await requireRoles(ADMIN_ROLES);
+  const me = await needUsersManage();
   if (!me) return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
   const b = await req.json().catch(() => ({}));
   const username = String(b.username || "").trim();

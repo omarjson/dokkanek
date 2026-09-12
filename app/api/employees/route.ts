@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit";
+import { hasPerm } from "@/lib/permissions";
 import { cookies } from "next/headers";
 
 async function who() {
@@ -10,11 +11,18 @@ async function who() {
 }
 
 export async function GET() {
+  const me = await who();
+  if (!me || !(await hasPerm(me.role, "hr.view"))) {
+    return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
+  }
   return NextResponse.json(await prisma.employee.findMany({ orderBy: { name: "asc" }, include: { attendances: { orderBy: { date: "desc" }, take: 10 } } }));
 }
 
 export async function POST(req: Request) {
   const me = await who();
+  if (!me || !(await hasPerm(me.role, "hr.view"))) {
+    return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
+  }
   const b = await req.json();
   if (!b.name) return NextResponse.json({ error: "الاسم مطلوب" }, { status: 400 });
   const e = await prisma.employee.create({

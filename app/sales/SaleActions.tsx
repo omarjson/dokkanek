@@ -4,10 +4,10 @@ import { useRouter } from "next/navigation";
 import { btnXsCls } from "@/components/ui";
 import { confirmDialog, toast } from "@/components/toast";
 
-export function SaleActions({ id, no, status }: { id: string; no: string; status: string }) {
+export function SaleActions({ id, no, status, canVoid }: { id: string; no: string; status: string; canVoid: boolean }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
-  if (status === "CANCELLED") return <span className="text-xs text-slate-400">—</span>;
+  if (status === "CANCELLED" || !canVoid) return <span className="text-xs text-slate-400">—</span>;
 
   async function voidSale() {
     if (!(await confirmDialog(`إلغاء الفاتورة ${no}؟ سترجع الكميات للمخزون.`))) return;

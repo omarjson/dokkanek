@@ -4,6 +4,8 @@ import { prisma } from "@/lib/db";
 import { lyd, SALE_STATUS } from "@/lib/format";
 import { PageTitle, Card, Badge, Stat, TableWrap, THead, btnGhostCls } from "@/components/ui";
 import { getModuleState } from "@/lib/modules";
+import { hasPerm } from "@/lib/permissions";
+import { currentUser } from "@/lib/auth";
 import { IconCart, IconBox, IconUsers, IconBell, IconPlus, IconWrench, IconClock, IconReceipt } from "@/components/icons";
 
 const QUICK = [
@@ -70,6 +72,7 @@ export default async function Home() {
   }
   const weekMax = Math.max(1, ...week.map((w) => w.total));
   const { enabled } = await getModuleState();
+  const canProfit = await hasPerm((await currentUser().catch(() => null))?.role, "reports.profit");
   const quick = QUICK.filter((q) => !q.mod || enabled[q.mod]);
   const alertParts: string[] = [];
   if (pending > 0) alertParts.push(`انتظار ${pending}`);
@@ -110,7 +113,7 @@ export default async function Home() {
         <Stat
           label="مبيعات اليوم"
           value={lyd(todayAgg._sum.total)}
-          sub={<span className="text-emerald-700 font-bold">الربح: {lyd(todayProfit)}</span>}
+          sub={canProfit ? <span className="text-emerald-700 font-bold">الربح: {lyd(todayProfit)}</span> : undefined}
           icon={IconCart}
           accent="bg-emerald-500/10 text-emerald-600"
         />

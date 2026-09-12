@@ -51,6 +51,7 @@ model Product {
   categoryId  String?
   category    Category?    @relation(fields: [categoryId], references: [id])
   costPrice   Float        @default(0)
+  costUsd     Float        @default(0)
   salePrice   Float        @default(0)
   quantity    Float        @default(0)
   warehouseId String?
@@ -129,6 +130,7 @@ model Sale {
   discount    Float        @default(0)
   total       Float        @default(0)
   paid        Float        @default(0)
+  payRef      String       @default("")
   date        DateTime     @default(now())
   items       SaleItem[]
   payments    Payment[]
@@ -231,6 +233,7 @@ model Employee {
   commissionRate Float        @default(0)
   active         Boolean      @default(true)
   attendances    Attendance[]
+  advances       EmployeeAdvance[]
 }
 
 model Attendance {
@@ -318,4 +321,14 @@ model StocktakeItem {
   countedQty  Float     @default(0)
 
   @@unique([stocktakeId, productId])
+}
+
+model EmployeeAdvance {
+  id         String   @id @default(cuid())
+  employeeId String
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  amount     Float
+  date       DateTime @default(now())
+  note       String   @default("")
+  settled    Boolean  @default(false)
 }

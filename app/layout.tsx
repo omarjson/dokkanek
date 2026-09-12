@@ -6,6 +6,8 @@ import { currentUser } from "@/lib/auth";
 import { ADMIN_ROLES } from "@/lib/format";
 import { Sidebar, type NavLink } from "@/components/Sidebar";
 import { getModuleState } from "@/lib/modules";
+import { getRolePerms } from "@/lib/permissions";
+import { SetupClient } from "./setup/SetupClient";
 import { Toaster } from "@/components/toast";
 import { ServiceWorker } from "@/components/ServiceWorker";
 
@@ -32,8 +34,8 @@ const LINKS: NavLink[] = [
   { href: "/stickers", label: "طباعة الستيكرات", icon: "stickers", section: "المخزون" },
   { href: "/stocktake", label: "الجرد", icon: "stocktake", section: "المخزون", mod: "stocktake" },
   { href: "/transfers", label: "التحويلات", icon: "returns", section: "المخزون", mod: "transfers" },
-  { href: "/suppliers", label: "الموردون", icon: "suppliers", section: "المخزون", mod: "suppliers" },
-  { href: "/expenses", label: "المصروفات", icon: "expenses", section: "المخزون", mod: "expenses" },
+  { href: "/suppliers", label: "الموردون", icon: "suppliers", section: "المخزون", mod: "suppliers", perm: "purchases.manage" },
+  { href: "/expenses", label: "المصروفات", icon: "expenses", section: "المخزون", mod: "expenses", perm: "expenses.view" },
   { href: "/returns", label: "الرواجع والتالف", icon: "returns", section: "المخزون", mod: "returns" },
   { href: "/shifts", label: "الورديات", icon: "shifts", section: "المخزون", mod: "shifts" },
   { href: "/closing", label: "إقفال اليوم", icon: "reports", section: "المخزون" },
@@ -41,23 +43,27 @@ const LINKS: NavLink[] = [
   { href: "/maintenance", label: "الصيانة", icon: "maintenance", section: "الميدان", mod: "maintenance" },
   { href: "/my-work", label: "مهامي", icon: "employees", section: "الميدان", roles: ["COURIER", "TECHNICIAN"] },
   { href: "/import", label: "استيراد", icon: "import", section: "الإدارة", mod: "import", roles: ADMIN_ROLES },
-  { href: "/reports", label: "التقارير", icon: "reports", section: "الإدارة", mod: "reports", roles: ADMIN_ROLES },
+  { href: "/reports", label: "التقارير", icon: "reports", section: "الإدارة", mod: "reports", perm: "reports.profit", roles: ADMIN_ROLES },
   { href: "/developers", label: "المطورون", icon: "developers", section: "الإدارة", mod: "developers", roles: ADMIN_ROLES },
-  { href: "/employees", label: "الموظفون", icon: "employees", section: "الإدارة", mod: "employees", roles: ADMIN_ROLES },
+  { href: "/employees", label: "الموظفون", icon: "employees", section: "الإدارة", mod: "employees", perm: "hr.view", roles: ADMIN_ROLES },
   { href: "/branches", label: "الفروع", icon: "store", section: "الإدارة", roles: ADMIN_ROLES },
-  { href: "/users", label: "المستخدمون", icon: "customers", section: "الإدارة", roles: ADMIN_ROLES },
+  { href: "/users", label: "المستخدمون", icon: "customers", section: "الإدارة", perm: "users.manage", roles: ADMIN_ROLES },
+  { href: "/permissions", label: "الصلاحيات", icon: "audit", section: "الإدارة", roles: ADMIN_ROLES },
   { href: "/notifications", label: "التنبيهات", icon: "notifications", section: "الإدارة", mod: "notifications", roles: ADMIN_ROLES },
   { href: "/audit", label: "سجل الأمن", icon: "audit", section: "الإدارة", roles: ADMIN_ROLES },
-  { href: "/settings", label: "الإعدادات", icon: "settings", section: "الإدارة", roles: ADMIN_ROLES },
+  { href: "/settings", label: "الإعدادات", icon: "settings", section: "الإدارة", perm: "settings.edit", roles: ADMIN_ROLES },
 ];
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const settings = await getSettings();
   const user = await currentUser().catch(() => null);
+  // قاعدة جديدة بلا مدير = تثبيت إجباري أولا (أي صفحة تعرض المعالج)
+  const adminCount = await prisma.user.count({ where: { role: "ADMIN", active: true } }).catch(() => 1);
   const { enabled } = await getModuleState();
   const storeName = settings.store_name || "دكّانك";
   const color = settings.primary_color || "#0d6efd";
-  const links = LINKS.filter((l) => !l.mod || enabled[l.mod]);
+  const myPerms = user?.role === "ADMIN" ? new Set(["*"]) : await getRolePerms(user?.role || "");
+  const links = LINKS.filter((l) => (!l.mod || enabled[l.mod]) && (!l.perm || myPerms.has(l.perm) || myPerms.has("*")));
 
   return (
     <html lang="ar" dir="ltr">
@@ -71,7 +77,9 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
         />
         <ServiceWorker />
         <Toaster />
-        {user ? (
+        {adminCount === 0 ? (
+          <main><SetupClient /></main>
+        ) : user ? (
           <div className="min-h-screen md:flex md:items-stretch">
             <Sidebar links={links} user={{ name: user.name, role: user.role }} storeName={storeName} />
             <div className="flex-1 min-w-0 flex flex-col">

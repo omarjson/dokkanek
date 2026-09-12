@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { hasPerm } from "@/lib/permissions";
 import { audit } from "@/lib/audit";
 import { cookies } from "next/headers";
 
@@ -32,6 +33,9 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   const me = await who();
+  if (!me || !(await hasPerm(me.role, "price.edit"))) {
+    return NextResponse.json({ error: "إضافة الأصناف تحتاج صلاحية" }, { status: 403 });
+  }
   const b = await req.json();
   if (!b.name || b.salePrice === undefined) {
     return NextResponse.json({ error: "الاسم وسعر البيع مطلوبان" }, { status: 400 });
@@ -43,6 +47,7 @@ export async function POST(req: Request) {
       name: String(b.name),
       categoryId: b.categoryId || null,
       costPrice: Number(b.costPrice || 0),
+      costUsd: Number(b.costUsd || 0),
       salePrice: Number(b.salePrice || 0),
       quantity: Number(b.quantity || 0),
       warehouseId: b.warehouseId || null,

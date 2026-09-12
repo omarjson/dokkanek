@@ -9,7 +9,7 @@ import { lyd, PAY_METHODS } from "@/lib/format";
 type P = { id: string; name: string; salePrice: number; quantity: number; sku: string; barcode: string; isFavorite: boolean; categoryId: string | null; categoryName: string | null };
 type CartItem = { id: string; name: string; price: number; qty: number; max: number };
 
-export function POSClient({ products, customers, categories, deliveryOn = true }: { products: P[]; customers: { id: string; name: string }[]; categories: { id: string; name: string }[]; deliveryOn?: boolean }) {
+export function POSClient({ products, customers, categories, deliveryOn = true, canDiscount = true }: { products: P[]; customers: { id: string; name: string }[]; categories: { id: string; name: string }[]; deliveryOn?: boolean; canDiscount?: boolean }) {
   const router = useRouter();
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("");
@@ -18,6 +18,7 @@ export function POSClient({ products, customers, categories, deliveryOn = true }
   const [status, setStatus] = useState("COMPLETED");
   const [customerId, setCustomerId] = useState("");
   const [discount, setDiscount] = useState("0");
+  const [payRef, setPayRef] = useState("");
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState<{ no: string; id: string } | null>(null);
   // طابور الأوفلاين: فواتير محفوظة في المتصفح تُزامَن عند عودة النت
@@ -84,6 +85,7 @@ export function POSClient({ products, customers, categories, deliveryOn = true }
       payMethod, status,
       customerId: customerId || null,
       discount: Number(discount || 0),
+      payRef: payRef.trim() || undefined,
     };
     try {
       const res = await fetch("/api/sales", {
@@ -96,6 +98,7 @@ export function POSClient({ products, customers, categories, deliveryOn = true }
         setDone({ no: j.no, id: j.id });
         setCart([]);
         setDiscount("0");
+        setPayRef("");
         toast(`تم حفظ الفاتورة ${j.no}`, "success");
         router.refresh();
       } else {
@@ -210,6 +213,11 @@ export function POSClient({ products, customers, categories, deliveryOn = true }
                 {Object.entries(PAY_METHODS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
               </select>
             </label>
+            {(payMethod === "CARD" || payMethod === "TRANSFER") && (
+              <label className="text-sm">كود المعاملة (اختياري)
+                <input className={inputCls} value={payRef} onChange={(e) => setPayRef(e.target.value)} placeholder="رقم العملية أو الحساب" />
+              </label>
+            )}
             <label className="text-sm">نوع الفاتورة
               <select className={inputCls} value={status} onChange={(e) => setStatus(e.target.value)}>
                 <option value="COMPLETED">بيع فوري</option>
@@ -218,9 +226,11 @@ export function POSClient({ products, customers, categories, deliveryOn = true }
                 {deliveryOn && <option value="COURIER">توصيل (بحوزة مندوب)</option>}
               </select>
             </label>
+            {canDiscount && (
             <label className="text-sm">خصم
               <input type="number" min="0" className={inputCls} value={discount} onChange={(e) => setDiscount(e.target.value)} />
             </label>
+            )}
           </div>
           <div className="flex justify-between items-center mt-3 rounded-2xl bg-slate-950 text-white px-4 py-3">
             <span className="text-sm text-slate-300">الإجمالي</span>

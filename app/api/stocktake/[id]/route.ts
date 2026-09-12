@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit";
+import { hasPerm } from "@/lib/permissions";
 import { cookies } from "next/headers";
 
 async function who() {
@@ -32,6 +33,9 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   }
 
   if (b.action === "close") {
+    if (!(await hasPerm(me?.role, "stocktake.adjust"))) {
+      return NextResponse.json({ error: "تسوية الجرد تحتاج صلاحية" }, { status: 403 });
+    }
     let adjusted = 0;
     for (const it of st.items) {
       const diff = it.countedQty - it.systemQty;

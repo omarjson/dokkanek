@@ -1,13 +1,17 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { requireRoles, hashPassword } from "@/lib/auth";
-import { ADMIN_ROLES } from "@/lib/format";
+import { hashPassword } from "@/lib/auth";
+import { hasPerm } from "@/lib/permissions";
 import { audit } from "@/lib/audit";
+import { cookies } from "next/headers";
 
-// تفعيل/تعطيل، تغيير الدور، تصفير كلمة المرور — للإدارة فقط (لا حذف لحفظ السجلات)
+// تفعيل/تعطيل، تغيير الدور، تصفير كلمة المرور — بصلاحية المستخدمين (لا حذف لحفظ السجلات)
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
-  const me = await requireRoles(ADMIN_ROLES);
-  if (!me) return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
+  const sid = cookies().get("dk_session")?.value;
+  const me = sid ? await prisma.user.findUnique({ where: { id: sid } }) : null;
+  if (!me || !(await hasPerm(me.role, "users.manage"))) {
+    return NextResponse.json({ error: "غير مصرح" }, { status: 403 });
+  }
   const b = await req.json().catch(() => ({}));
   const u = await prisma.user.findUnique({ where: { id: params.id } });
   if (!u) return NextResponse.json({ error: "غير موجود" }, { status: 404 });

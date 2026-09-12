@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { audit } from "@/lib/audit";
+import { hasPerm } from "@/lib/permissions";
 import { cookies } from "next/headers";
 
 // إلغاء فاتورة: يرجع الكميات للمخزون ويعكس دين الزبون — مع سجل كامل
@@ -10,6 +11,9 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     : null;
   const b = await req.json().catch(() => ({}));
   if (b.action !== "void") return NextResponse.json({ error: "إجراء غير معروف" }, { status: 400 });
+  if (!(await hasPerm(me?.role, "sales.void"))) {
+    return NextResponse.json({ error: "الإلغاء يحتاج صلاحية" }, { status: 403 });
+  }
 
   const sale = await prisma.sale.findUnique({
     where: { id: params.id },

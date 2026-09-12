@@ -11,6 +11,8 @@ const FIELDS = [
   { key: "address", label: "العنوان" },
   { key: "footer_note", label: "سطر الفاتورة" },
   { key: "currency", label: "العملة" },
+  { key: "cost_usd_enabled", label: "تفعيل التكلفة بالدولار", type: "checkbox" },
+  { key: "usd_rate", label: "سعر صرف الدولار مقابل العملة" },
   { key: "wa_enabled", label: "تفعيل إرسال واتساب", type: "checkbox" },
   { key: "wa_endpoint", label: "رابط مزود واتساب (Webhook)" },
   { key: "wa_token", label: "مفتاح المزود" },

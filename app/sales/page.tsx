@@ -1,6 +1,8 @@
 export const dynamic = "force-dynamic";
 import Link from "next/link";
 import { prisma } from "@/lib/db";
+import { currentUser } from "@/lib/auth";
+import { hasPerm } from "@/lib/permissions";
 import { lyd, fmtDate, SALE_STATUS, PAY_METHODS } from "@/lib/format";
 import { PageTitle, Card, Badge, THead, btnGhostCls } from "@/components/ui";
 import { SaleActions } from "./SaleActions";
@@ -11,6 +13,7 @@ export default async function SalesPage() {
     take: 100,
     include: { customer: true, cashier: true, items: true },
   });
+  const canVoid = await hasPerm((await currentUser().catch(() => null))?.role, "sales.void");
   return (
     <div>
       <PageTitle title="فواتير المبيعات" sub={`${sales.length} فاتورة (الأحدث أولا)`} />
@@ -40,7 +43,7 @@ export default async function SalesPage() {
                 <td className="p-2 text-center font-bold">{lyd(s.total)}</td>
                 <td className="p-2 text-center">{lyd(s.paid)}</td>
                 <td className="p-2 text-xs text-slate-500">{fmtDate(s.date)}</td>
-                <td className="p-2"><SaleActions id={s.id} no={s.no} status={s.status} /></td>
+                <td className="p-2"><SaleActions id={s.id} no={s.no} status={s.status} canVoid={canVoid} /></td>
               </tr>
             ))}
           </tbody>
