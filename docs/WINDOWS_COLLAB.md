@@ -150,6 +150,7 @@ Local agent MUST NOT run `git push` or `gh release` (user instruction).
 | 2026-09-12 | local (4 parallel builders) | full tree: Domain 28 entities, Data, 24 Services + 26 interfaces, 30 Views, installer, CI, tests | done-static-check | 181 files; 36 XAML valid, 139 CS braces balanced; no compiler on machine |
 | 2026-09-12 | local (review) | net48 compat fixes: System.Data.SQLite.Core 1.0.118, Hosting 6.0.1, VOID→CANCELLED, Adapters bridge | done | web tree untouched (0 tracked modifications), no push |
 | 2026-09-12 | local | review fixes B1–B9: guarded decrement, warehouse-only transfer, frozen stocktake baseline, increment close + MarkClosed/ClosedAt, single-statement purchase + AwayFromZero, shift default-to-expected + guarded Close, void audit parity, busy_timeout | done-static-check | no compiler on machine; full msbuild run is CI/first-review-machine task |
+| 2026-09-12 | local | commit + push to main | done | 185 files, 12374 lines, commit dff98c1 |
 
 ## 9. ADR (Architecture Decision Records)
 
