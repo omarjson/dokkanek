@@ -1,0 +1,17 @@
+<UserControl x:Class="Dokkanek.Desktop.UI.Views.Privacy.PrivacyView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             FlowDirection="RightToLeft">
+  <StackPanel Margin="4">
+    <TextBlock Text="سياسة الخصوصية" Style="{StaticResource PageTitle}" />
+    <TextBlock Text="بياناتك محلية فقط — لا تتبع، والنسخة لك" Style="{StaticResource PageSub}" />
+    <Border Style="{StaticResource Card}">
+      <StackPanel>
+        <RichTextBox MinHeight="300" IsReadOnly="True" x:Name="PrivacyBox" />
+        <CheckBox IsChecked="{Binding IsAccepted}" Content="قرأت وأوافق على سياسة الخصوصية" MinHeight="40" Margin="0,8,0,0" />
+        <TextBlock Text="{Binding AcceptedAt, StringFormat=تاريخ القبول: {0}}" Foreground="{StaticResource MutedFg}" />
+        <Button Content="حفظ القبول" Command="{Binding AcceptCommand}" Style="{StaticResource PrimaryBtn}" MinHeight="40" Margin="0,8,0,0" />
+      </StackPanel>
+    </Border>
+  </StackPanel>
+</UserControl>

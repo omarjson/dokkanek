@@ -1,0 +1,83 @@
+<Window x:Class="Dokkanek.Desktop.UI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="دكّانك" Height="720" Width="1180"
+        FlowDirection="RightToLeft" WindowStartupLocation="CenterScreen">
+  <DockPanel>
+    <StatusBar DockPanel.Dock="Bottom">
+      <StatusBarItem><TextBlock Text="{Binding BranchName, StringFormat=الفرع: {0}}" /></StatusBarItem>
+      <Separator />
+      <StatusBarItem><TextBlock Text="{Binding UserName, StringFormat=المستخدم: {0}}" /></StatusBarItem>
+      <Separator />
+      <StatusBarItem><TextBlock Text="{Binding ShiftInfo}" /></StatusBarItem>
+      <Separator />
+      <StatusBarItem><TextBlock Text="{Binding BackupState}" /></StatusBarItem>
+      <Separator />
+      <StatusBarItem><TextBlock Text="{Binding UpdateState}" /></StatusBarItem>
+    </StatusBar>
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+      <!-- Sidebar -->
+      <Border Grid.Column="0" Background="{StaticResource SidebarBg}" Width="210" x:Name="NavPane">
+        <DockPanel>
+          <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="12,12,12,8">
+            <Border Width="36" Height="36" CornerRadius="10" Background="{StaticResource BrandBrush}">
+              <TextBlock Text="{Binding StoreName}" Foreground="White" FontWeight="Bold"
+                         HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <TextBlock Text="{Binding StoreName}" Foreground="White" FontSize="16"
+                       FontWeight="SemiBold" Margin="8,6,0,0" />
+          </StackPanel>
+          <StackPanel DockPanel.Dock="Bottom" Margin="8">
+            <TextBlock Text="{Binding UserName}" Foreground="White" FontWeight="Bold" FontSize="13" />
+            <TextBlock Text="{Binding RoleLabel}" Foreground="{StaticResource SidebarFg}" FontSize="11" />
+            <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+              <Button Content="خروج" Command="{Binding LogoutCommand}" Style="{StaticResource GhostBtn}" MinHeight="40" />
+              <Button Content="≡" Command="{Binding ToggleNavCommand}" Style="{StaticResource GhostBtn}" MinHeight="40" Margin="6,0,0,0" ToolTip="طي القائمة" />
+            </StackPanel>
+          </StackPanel>
+          <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="8,0,8,8">
+              <Button Content="الرئيسية" Command="{Binding NavigateCommand}" CommandParameter="Dashboard" MinHeight="40" Margin="0,2" />
+              <TextBlock Text="العمل" Foreground="{StaticResource SidebarFg}" FontSize="11" FontWeight="Bold" Margin="6,10,6,2" />
+              <Button Content="نقطة البيع" Command="{Binding NavigateCommand}" CommandParameter="Pos" MinHeight="40" Margin="0,2" Visibility="{Binding CanViewPos, Converter={StaticResource BoolToVis}}" />
+              <Button Content="الفواتير" Command="{Binding NavigateCommand}" CommandParameter="Sales" MinHeight="40" Margin="0,2" Visibility="{Binding CanViewSales, Converter={StaticResource BoolToVis}}" />
+              <Button Content="الزبائن والديون" Command="{Binding NavigateCommand}" CommandParameter="Customers" MinHeight="40" Margin="0,2" Visibility="{Binding CanViewCustomers, Converter={StaticResource BoolToVis}}" />
+              <TextBlock Text="المخزون" Foreground="{StaticResource SidebarFg}" FontSize="11" FontWeight="Bold" Margin="6,10,6,2" />
+              <Button Content="الأصناف" Command="{Binding NavigateCommand}" CommandParameter="Products" MinHeight="40" Margin="0,2" Visibility="{Binding CanViewProducts, Converter={StaticResource BoolToVis}}" />
+              <Button Content="طباعة الستيكرات" Command="{Binding NavigateCommand}" CommandParameter="Stickers" MinHeight="40" Margin="0,2" Visibility="{Binding CanViewStickers, Converter={StaticResource BoolToVis}}" />
+              <Button Content="الجرد" Command="{Binding NavigateCommand}" CommandParameter="Stocktake" MinHeight="40" Margin="0,2" Visibility="{Binding CanViewStocktake, Converter={StaticResource BoolToVis}}" />
+              <Button Content="التحويلات" Command="{Binding NavigateCommand}" CommandParameter="Transfers" MinHeight="40" Margin="0,2" Visibility="{Binding CanViewTransfers, Converter={StaticResource BoolToVis}}" />
+              <Button Content="الموردون" Command="{Binding NavigateCommand}" CommandParameter="Suppliers" MinHeight="40" Margin="0,2" Visibility="{Binding CanViewSuppliers, Converter={StaticResource BoolToVis}}" />
+              <Button Content="المصروفات" Command="{Binding NavigateCommand}" CommandParameter="Expenses" MinHeight="40" Margin="0,2" Visibility="{Binding CanViewExpenses, Converter={StaticResource BoolToVis}}" />
+              <Button Content="الرواجع والتالف" Command="{Binding NavigateCommand}" CommandParameter="Returns" MinHeight="40" Margin="0,2" Visibility="{Binding CanViewReturns, Converter={StaticResource BoolToVis}}" />
+              <Button Content="الورديات" Command="{Binding NavigateCommand}" CommandParameter="Shifts" MinHeight="40" Margin="0,2" Visibility="{Binding CanViewShifts, Converter={StaticResource BoolToVis}}" />
+              <Button Content="إقفال اليوم" Command="{Binding NavigateCommand}" CommandParameter="Closing" MinHeight="40" Margin="0,2" />
+              <TextBlock Text="الميدان" Foreground="{StaticResource SidebarFg}" FontSize="11" FontWeight="Bold" Margin="6,10,6,2" />
+              <Button Content="التوصيل" Command="{Binding NavigateCommand}" CommandParameter="Delivery" MinHeight="40" Margin="0,2" Visibility="{Binding CanViewDelivery, Converter={StaticResource BoolToVis}}" />
+              <Button Content="الصيانة" Command="{Binding NavigateCommand}" CommandParameter="Maintenance" MinHeight="40" Margin="0,2" Visibility="{Binding CanViewMaintenance, Converter={StaticResource BoolToVis}}" />
+              <Button Content="مهامي" Command="{Binding NavigateCommand}" CommandParameter="MyWork" MinHeight="40" Margin="0,2" />
+              <TextBlock Text="الإدارة" Foreground="{StaticResource SidebarFg}" FontSize="11" FontWeight="Bold" Margin="6,10,6,2" />
+              <Button Content="استيراد" Command="{Binding NavigateCommand}" CommandParameter="Import" MinHeight="40" Margin="0,2" />
+              <Button Content="التقارير" Command="{Binding NavigateCommand}" CommandParameter="Reports" MinHeight="40" Margin="0,2" Visibility="{Binding CanViewReports, Converter={StaticResource BoolToVis}}" />
+              <Button Content="المطورون" Command="{Binding NavigateCommand}" CommandParameter="Developers" MinHeight="40" Margin="0,2" />
+              <Button Content="الموظفون" Command="{Binding NavigateCommand}" CommandParameter="Employees" MinHeight="40" Margin="0,2" Visibility="{Binding CanViewEmployees, Converter={StaticResource BoolToVis}}" />
+              <Button Content="الفروع" Command="{Binding NavigateCommand}" CommandParameter="Branches" MinHeight="40" Margin="0,2" />
+              <Button Content="المستخدمون" Command="{Binding NavigateCommand}" CommandParameter="Users" MinHeight="40" Margin="0,2" Visibility="{Binding CanViewUsers, Converter={StaticResource BoolToVis}}" />
+              <Button Content="الصلاحيات" Command="{Binding NavigateCommand}" CommandParameter="Permissions" MinHeight="40" Margin="0,2" />
+              <Button Content="التنبيهات" Command="{Binding NavigateCommand}" CommandParameter="Notifications" MinHeight="40" Margin="0,2" />
+              <Button Content="سجل الأمن" Command="{Binding NavigateCommand}" CommandParameter="Audit" MinHeight="40" Margin="0,2" />
+              <Button Content="الإعدادات" Command="{Binding NavigateCommand}" CommandParameter="Settings" MinHeight="40" Margin="0,2" Visibility="{Binding CanViewSettings, Converter={StaticResource BoolToVis}}" />
+            </StackPanel>
+          </ScrollViewer>
+        </DockPanel>
+      </Border>
+      <!-- Content -->
+      <Frame Grid.Column="1" x:Name="MainFrame" NavigationUIVisibility="Hidden" Margin="12"
+             Content="{Binding SelectedView}" />
+    </Grid>
+  </DockPanel>
+</Window>

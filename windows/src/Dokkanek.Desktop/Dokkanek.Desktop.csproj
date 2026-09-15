@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <LangVersion>7.3</LangVersion>
+    <RootNamespace>Dokkanek.Desktop</RootNamespace>
+    <AssemblyName>Dokkanek.Desktop</AssemblyName>
+    <Nullable>disable</Nullable>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+    <!-- net48/Win7-safe SQLite provider (Microsoft.Data.Sqlite needs .NET 6+) -->
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.118" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Assets\Terms.rtf" />
+    <Resource Include="Assets\Privacy.rtf" />
+  </ItemGroup>
+</Project>

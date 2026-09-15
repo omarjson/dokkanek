@@ -1,0 +1,90 @@
+<UserControl x:Class="Dokkanek.Desktop.UI.Views.Pos.PosView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             FlowDirection="RightToLeft">
+  <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <StackPanel Margin="4">
+      <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+        <Border Style="{StaticResource AccentBar}" Height="36" />
+        <StackPanel>
+          <TextBlock Text="نقطة البيع" Style="{StaticResource PageTitle}" />
+          <TextBlock Text="نقدي • بطاقة • آجل • توصيل • انتظار" Style="{StaticResource PageSub}" />
+        </StackPanel>
+      </StackPanel>
+      <!-- Offline outbox banner -->
+      <Border Style="{StaticResource Card}" Visibility="{Binding ShowOutboxBanner, Converter={StaticResource BoolToVis}}"
+              Background="#FFFBEB" BorderBrush="#FCD34D">
+        <StackPanel Orientation="Horizontal">
+          <TextBlock Text="{Binding OutboxCount, StringFormat=لديك {0} فاتورة غير مُزامَنة}" VerticalAlignment="Center" />
+          <Button Content="مزامنة الآن" Command="{Binding SyncCommand}" Style="{StaticResource PrimaryBtn}" MinHeight="40" Margin="12,0,0,0" />
+        </StackPanel>
+      </Border>
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="2*" />
+          <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <!-- Products side -->
+        <Border Grid.Column="0" Style="{StaticResource Card}" Margin="0,0,6,12">
+          <StackPanel>
+            <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" MinHeight="40" Margin="0,0,0,8" />
+            <ItemsControl ItemsSource="{Binding Categories}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate><WrapPanel /></ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <ToggleButton Content="{Binding Name}" Style="{StaticResource ChipBtn}" MinHeight="40" />
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <ListView ItemsSource="{Binding Products}" MinHeight="300" Margin="0,8,0,0"
+                      VirtualizingStackPanel.IsVirtualizing="True"
+                      VirtualizingStackPanel.VirtualizationMode="Recycling">
+              <ListView.ItemTemplate>
+                <DataTemplate>
+                  <Border Style="{StaticResource Card}" Margin="4">
+                    <StackPanel>
+                      <TextBlock Text="{Binding Name}" FontWeight="Bold" />
+                      <TextBlock Text="{Binding Price, StringFormat={}{0} د.ل}" Foreground="{StaticResource MutedFg}" />
+                      <Button Content="أضف" Command="{Binding DataContext.AddCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                              CommandParameter="{Binding}" Style="{StaticResource GhostBtn}" MinHeight="40" Margin="0,4,0,0" />
+                    </StackPanel>
+                  </Border>
+                </DataTemplate>
+              </ListView.ItemTemplate>
+            </ListView>
+          </StackPanel>
+        </Border>
+        <!-- Cart side -->
+        <Border Grid.Column="1" Style="{StaticResource Card}" Margin="6,0,0,12">
+          <StackPanel>
+            <TextBlock Text="السلة" FontWeight="Bold" FontSize="16" />
+            <DataGrid ItemsSource="{Binding Cart}" Style="{StaticResource AppTable}" MinHeight="180" Margin="0,8,0,0">
+              <DataGrid.Columns>
+                <DataGridTextColumn Header="الصنف" Binding="{Binding Name}" Width="*" />
+                <DataGridTextColumn Header="الكمية" Binding="{Binding Qty}" Width="60" />
+                <DataGridTextColumn Header="السعر" Binding="{Binding Price}" Width="80" />
+              </DataGrid.Columns>
+            </DataGrid>
+            <TextBlock Text="الخصم" FontWeight="Bold" Margin="0,8,0,0" />
+            <TextBox Text="{Binding Discount, UpdateSourceTrigger=PropertyChanged}"
+                     IsEnabled="{Binding CanDiscount}" MinHeight="40" ToolTip="يتطلب صلاحية sales.discount" />
+            <TextBlock Text="طريقة الدفع" FontWeight="Bold" Margin="0,8,0,0" />
+            <ComboBox ItemsSource="{Binding PayMethods}" SelectedItem="{Binding SelectedPayMethod}"
+                      DisplayMemberPath="Value" MinHeight="40" />
+            <TextBlock Text="نوع الفاتورة" FontWeight="Bold" Margin="0,8,0,0" />
+            <ComboBox ItemsSource="{Binding InvoiceTypes}" SelectedItem="{Binding SelectedInvoiceType}"
+                      DisplayMemberPath="Value" MinHeight="40" />
+            <TextBlock Text="مرجع الدفع" FontWeight="Bold" Margin="0,8,0,0" />
+            <TextBox Text="{Binding PayRef, UpdateSourceTrigger=PropertyChanged}" MinHeight="40" />
+            <Border Style="{StaticResource Badge}" Margin="0,12,0,0" HorizontalAlignment="Stretch">
+              <TextBlock Text="{Binding Total, StringFormat=الإجمالي: {0} د.ل}" FontSize="18" FontWeight="Bold" />
+            </Border>
+            <Button Content="إتمام البيع" Command="{Binding CheckoutCommand}" Style="{StaticResource PrimaryBtn}" MinHeight="40" Margin="0,8,0,0" />
+          </StackPanel>
+        </Border>
+      </Grid>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

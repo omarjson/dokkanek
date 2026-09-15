@@ -1,0 +1,44 @@
+<UserControl x:Class="Dokkanek.Desktop.UI.Views.Setup.SetupView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             FlowDirection="RightToLeft">
+  <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <StackPanel Margin="4" MaxWidth="640">
+      <TextBlock Text="معالج الإعداد الأولي" Style="{StaticResource PageTitle}" />
+      <TextBlock Text="خطوات سريعة — المتجر، المدير، الشروط، النسخ الاحتياطي" Style="{StaticResource PageSub}" />
+      <Border Style="{StaticResource Card}">
+        <StackPanel>
+          <TextBlock Text="1) بيانات المتجر" FontWeight="Bold" />
+          <TextBox Text="{Binding ShopName}" MinHeight="40" Margin="0,4,0,4" />
+          <TextBox Text="{Binding Phone}" MinHeight="40" Margin="0,0,0,4" />
+          <TextBox Text="{Binding Address}" MinHeight="40" />
+        </StackPanel>
+      </Border>
+      <Border Style="{StaticResource Card}">
+        <StackPanel>
+          <TextBlock Text="2) حساب المدير" FontWeight="Bold" />
+          <TextBox Text="{Binding AdminName}" MinHeight="40" Margin="0,4,0,4" />
+          <PasswordBox x:Name="AdminPass" MinHeight="40" />
+        </StackPanel>
+      </Border>
+      <Border Style="{StaticResource Card}">
+        <StackPanel>
+          <CheckBox IsChecked="{Binding TermsAccepted}" Content="أوافق على الشروط والأحكام" MinHeight="40" />
+          <CheckBox IsChecked="{Binding PrivacyAccepted}" Content="أوافق على سياسة الخصوصية" MinHeight="40" />
+        </StackPanel>
+      </Border>
+      <Border Style="{StaticResource Card}">
+        <StackPanel>
+          <TextBlock Text="3) النسخ الاحتياطي والاستعادة" FontWeight="Bold" />
+          <TextBox Text="{Binding BackupLocation}" MinHeight="40" Margin="0,4,0,4" />
+          <StackPanel Orientation="Horizontal">
+            <Button Content="اختيار مجلد النسخ" Command="{Binding PickBackupCommand}" Style="{StaticResource GhostBtn}" MinHeight="40" />
+            <Button Content="اختيار ملف استعادة" Command="{Binding PickRestoreCommand}" Style="{StaticResource GhostBtn}" MinHeight="40" Margin="8,0,0,0" />
+          </StackPanel>
+          <TextBlock Text="{Binding RestoreFile}" Foreground="{StaticResource MutedFg}" Margin="0,4,0,0" />
+          <Button Content="إنهاء الإعداد" Command="{Binding FinishCommand}" Style="{StaticResource PrimaryBtn}" MinHeight="40" Margin="0,8,0,0" />
+        </StackPanel>
+      </Border>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

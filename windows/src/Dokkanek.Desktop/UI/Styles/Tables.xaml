@@ -1,0 +1,15 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Style x:Key="AppTable" TargetType="DataGrid">
+    <Setter Property="AutoGenerateColumns" Value="False" />
+    <Setter Property="IsReadOnly" Value="True" />
+    <Setter Property="MinHeight" Value="200" />
+    <Setter Property="RowHeight" Value="40" />
+    <Setter Property="GridLinesVisibility" Value="Horizontal" />
+    <Setter Property="HeadersVisibility" Value="Column" />
+    <Setter Property="Background" Value="White" />
+  </Style>
+  <Style x:Key="TableCard" TargetType="Border" BasedOn="{StaticResource Card}">
+    <Setter Property="Padding" Value="0" />
+  </Style>
+</ResourceDictionary>

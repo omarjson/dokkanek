@@ -1,0 +1,17 @@
+<UserControl x:Class="Dokkanek.Desktop.UI.Views.Terms.TermsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             FlowDirection="RightToLeft">
+  <StackPanel Margin="4">
+    <TextBlock Text="الشروط والأحكام" Style="{StaticResource PageTitle}" />
+    <TextBlock Text="استخدام عادل — ترخيص لمرة واحدة، يعمل دون إنترنت" Style="{StaticResource PageSub}" />
+    <Border Style="{StaticResource Card}">
+      <StackPanel>
+        <RichTextBox MinHeight="300" IsReadOnly="True" x:Name="TermsBox" />
+        <CheckBox IsChecked="{Binding IsAccepted}" Content="قرأت وأوافق على الشروط" MinHeight="40" Margin="0,8,0,0" />
+        <TextBlock Text="{Binding AcceptedAt, StringFormat=تاريخ القبول: {0}}" Foreground="{StaticResource MutedFg}" />
+        <Button Content="حفظ القبول" Command="{Binding AcceptCommand}" Style="{StaticResource PrimaryBtn}" MinHeight="40" Margin="0,8,0,0" />
+      </StackPanel>
+    </Border>
+  </StackPanel>
+</UserControl>
